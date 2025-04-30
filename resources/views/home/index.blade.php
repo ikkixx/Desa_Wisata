@@ -1,0 +1,24 @@
+@extends('fe.master')
+@section('slider')
+@include('fe.slider')
+@endsection
+@section('content')
+@section('trip')
+    @include('fe.trip')
+@section('package')
+    @include('fe.package')
+@section('service')
+    @include('fe.service')
+@section('blog')
+    @include('fe.blog')
+@section('client')
+    @include('fe.client')
+@section('contact_us')
+    @include('fe.contact_us')
+@endsection
+@endsection
+@endsection
+@endsection
+@endsection
+@endsection
+@endsection
