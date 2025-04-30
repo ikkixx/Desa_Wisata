@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('kategori_beritas')) {
-            Schema::create('kategori_beritas', function (Blueprint $table) {
-                $table->id();
-                $table->string('nama_kategori', 255);
-                $table->timestamps();
-            });
-        }
+        Schema::create('kategori_beritas', function (Blueprint $table) {
+            $table->id();
+            $table->string('kategori_berita', 255)->unique();
+            $table->timestamps();
+        });
     }
 
     /**

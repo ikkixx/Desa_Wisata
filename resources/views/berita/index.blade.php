@@ -12,270 +12,61 @@
 
 <div class="content-wrapper">
     <div class="container-fluid">
+
         <div class="row mt-3">
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Basic Table</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">First</th>
-                                        <th scope="col">Last</th>
-                                        <th scope="col">Handle</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Jacob</td>
-                                        <td>Thornton</td>
-                                        <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td>Larry</td>
-                                        <td>the Bird</td>
-                                        <td>@twitter</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Bordered Table</h5>
+                        <h4 class="card-title">Daftar Berita</h4>
+                        <a href="{{ route('berita.create') }}" class="btn btn-primary mb-3">Tambah Berita</a> <!-- Add button -->
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">First</th>
-                                        <th scope="col">Last</th>
-                                        <th scope="col">Handle</th>
+                                        <th>ID</th>
+                                        <th>Judul</th>
+                                        <th>Berita</th>
+                                        <th>Flag Post</th>
+                                        <th>Kategori</th>
+                                        <th>Foto</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {{-- Loop data berita --}}
+                                    @foreach($berita as $item)
                                     <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
+                                        <td>{{ $item->id }}</td>
+                                        <td>{{ $item->judul }}</td>
+                                        <td>{{ Str::limit($item->berita, 50) }}</td> <!-- Limit berita text -->
+                                        <td>{{ $item->fgl_post }}</td>
+                                        <td>{{ $item->kategori_berita->nama_kategori ?? '-' }}</td> <!-- Assuming relation -->
+                                        <td>
+                                            <img src="{{ asset('storage/' . $item->foto) }}" alt="Foto" width="50">
+                                        </td>
+                                        <td>{{ $item->created_at }}</td>
+                                        <td>{{ $item->updated_at }}</td>
+                                        <td>
+                                            <a href="{{ route('berita.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                            <form action="{{ route('berita.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                            </form>
+                                        </td>
                                     </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Jacob</td>
-                                        <td>Thornton</td>
-                                        <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td colspan="2">Larry the Bird</td>
-                                        <td>@twitter</td>
-                                    </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!--End Row-->
+        </div><!--End Row-->
 
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Striped Table</h5>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">First</th>
-                                        <th scope="col">Last</th>
-                                        <th scope="col">Handle</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Jacob</td>
-                                        <td>Thornton</td>
-                                        <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td>Larry</td>
-                                        <td>the Bird</td>
-                                        <td>@twitter</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Hover Table</h5>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">First</th>
-                                        <th scope="col">Last</th>
-                                        <th scope="col">Handle</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Jacob</td>
-                                        <td>Thornton</td>
-                                        <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td colspan="2">Larry the Bird</td>
-                                        <td>@twitter</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--End Row-->
+    </div>
+</div>
 
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Small Table</h5>
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">First</th>
-                                        <th scope="col">Last</th>
-                                        <th scope="col">Handle</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Jacob</td>
-                                        <td>Thornton</td>
-                                        <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td colspan="2">Larry the Bird</td>
-                                        <td>@twitter</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Responsive Table</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                        <th scope="col">Heading</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                        <td>Cell</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--End Row-->
-        @endsection
+@endsection

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('foto4')->nullable();
             $table->text('foto5')->nullable();
             $table->timestamps();
-
+    
             // Foreign key constraint
             $table->foreign('id_kategori_wisata')->references('id')->on('kategori_wisatas')->onDelete('cascade')->onUpdate('cascade');
         });

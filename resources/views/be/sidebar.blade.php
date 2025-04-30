@@ -39,7 +39,7 @@
         </li>
 
         <li>
-            <a href="{{ Route('obyek_wisata') }}">
+            <a href="{{ Route('obyek_wisata.index') }}">
                 <i class="zmdi zmdi-pin"></i> <span>Obyek Wisata</span>
                 <small class="badge float-right badge-light">New</small>
             </a>
@@ -64,13 +64,13 @@
         </li>
 
         <li>
-            <a href="{{Route('berita')}}">
+            <a href="{{Route('berita.index')}}">
                 <i class="zmdi zmdi-info"></i> <span>Berita</span>
             </a>
         </li>
 
         <li>
-            <a href="{{Route('penginapan')}}">
+            <a href="{{Route('penginapan.index')}}">
                 <i class="zmdi zmdi-hotel"></i> <span>Penginapan</span>
             </a>
         </li>

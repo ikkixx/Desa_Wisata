@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_kategori_berita'); // Hapus duplikatnya
             $table->text('foto')->nullable();
             $table->timestamps();
-
+    
             // Foreign key constraint
             $table->foreign('id_kategori_berita')->references('id')->on('kategori_beritas')->onDelete('cascade')->onUpdate('cascade');
         });

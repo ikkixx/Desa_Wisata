@@ -3,48 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Penginapan; // Import model Penginapan
 
 class PenginapanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-{
-    $routeName = $request->route()->getName();
-
-    switch ($routeName) {
-        case 'admin':
-            return view('be.admin.index');
-        case 'reservasi':
-            return view('reservasi.index');
-        case 'users':
-            return view('users.index');
-        case 'pelanggan':
-            return view('pelanggan.index');
-        case 'obyek_wisata':
-            return view('obyek_wisata.index');
-        case 'paket_wisata':
-            return view('paket_wisata.index');
-        case 'karyawan':
-            return view('karyawan.index');
-        case 'kategori_wisata':
-            return view('kategori_wisata.index');
-        case 'berita':
-            return view('berita.index');
-        case 'penginapan':
-            return view('penginapan.index');
-        default:
-            return view('pelanggan.index');
+    public function index()
+    {
+        $penginapan = Penginapan::all(); // Fetch all penginapan from the database
+        return view('penginapan.index', compact('penginapan')); // Pass data to the view
     }
-}
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        return view('penginapan.create'); // Show the form to create a new penginapan
     }
 
     /**
@@ -52,7 +29,23 @@ class PenginapanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'nama_penginapan' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'description' => 'required|string', // Pastikan deskripsi divalidasi
+        ]);
+
+        // Simpan data ke database
+        Penginapan::create([
+            'nama_penginapan' => $validated['nama_penginapan'],
+            'address' => $validated['address'],
+            'price' => $validated['price'],
+            'deskripsi' => $validated['description'], // Pastikan deskripsi disimpan
+        ]);
+
+        // Redirect ke halaman lain dengan pesan sukses
+        return redirect()->route('penginapan.index')->with('success', 'Penginapan berhasil ditambahkan.');
     }
 
     /**

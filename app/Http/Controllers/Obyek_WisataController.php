@@ -3,48 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\ObyekWisata; // Import model ObyekWisata
 
 class Obyek_WisataController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-{
-    $routeName = $request->route()->getName();
-
-    switch ($routeName) {
-        case 'admin':
-            return view('be.admin.index');
-        case 'reservasi':
-            return view('reservasi.index');
-        case 'users':
-            return view('users.index');
-        case 'pelanggan':
-            return view('pelanggan.index');
-        case 'obyek_wisata':
-            return view('obyek_wisata.index');
-        case 'paket_wisata':
-            return view('paket_wisata.index');
-        case 'karyawan':
-            return view('karyawan.index');
-        case 'kategori_wisata':
-            return view('kategori_wisata.index');
-        case 'berita':
-            return view('berita.index');
-        case 'penginapan':
-            return view('penginapan.index');
-        default:
-            return view('pelanggan.index');
+    public function index()
+    {
+        $obyek_wisata = \App\Models\ObyekWisata::all(); // Fetch all obyek wisata
+        return view('obyek_wisata.index', compact('obyek_wisata')); // Pass data to view
     }
-}
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        $kategori_wisata = \App\Models\KategoriWisata::all(); // Fetch kategori wisata
+        return view('obyek_wisata.create', compact('kategori_wisata')); // Pass data to view
     }
 
     /**

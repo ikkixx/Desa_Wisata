@@ -11,8 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Rename the table to 'reservasi' if needed
-        Schema::create('reservasi', function (Blueprint $table) {
+        Schema::create('reservasis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_pelanggan')->constrained('pelanggans')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('id_paket')->constrained('paket_wisatas')->onDelete('cascade')->onUpdate('cascade');
@@ -23,7 +22,7 @@ return new class extends Migration
             $table->float('nilai_diskon')->nullable();
             $table->bigInteger('total_bayar');
             $table->text('file_bukti_tf')->nullable();
-            $table->enum('status_reservasi', ['pesan', 'dibayar', 'selesai'])->default('pesan');
+            $table->enum('status_reservasi', ['pesan', 'dibayar', 'selesai'])->default('pesan'); // Perbaikan default enum
             $table->timestamps();
         });
     }
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reservasi');
+        Schema::dropIfExists('reservasis');
     }
 };
