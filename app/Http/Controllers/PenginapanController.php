@@ -2,81 +2,129 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Penginapan;
 use Illuminate\Http\Request;
-use App\Models\Penginapan; // Import model Penginapan
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class PenginapanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $penginapan = Penginapan::all(); // Fetch all penginapan from the database
-        return view('penginapan.index', compact('penginapan')); // Pass data to the view
+        $penginapan = Penginapan::all();
+        $greeting = $this->getGreeting();
+
+        return view('be.penginapan.index', [
+            'title' => 'Manajemen Penginapan',
+            'penginapan' => $penginapan,
+            'greeting' => $greeting,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('penginapan.create'); // Show the form to create a new penginapan
+        $greeting = $this->getGreeting();
+        return view('be.penginapan.create', [
+            'title' => 'Tambah Penginapan',
+            'greeting' => $greeting,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'nama_penginapan' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'required|string', // Pastikan deskripsi divalidasi
+            'deskripsi' => 'required|string',
+            'fasilitas' => 'required|string|max:255',
+            'foto1' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'foto2' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto3' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto4' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto5' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Simpan data ke database
-        Penginapan::create([
-            'nama_penginapan' => $validated['nama_penginapan'],
-            'address' => $validated['address'],
-            'price' => $validated['price'],
-            'deskripsi' => $validated['description'], // Pastikan deskripsi disimpan
+        $data = $request->only(['nama_penginapan', 'deskripsi', 'fasilitas']);
+
+        // Upload foto
+        for ($i = 1; $i <= 5; $i++) {
+            if ($request->hasFile("foto{$i}")) {
+                $data["foto{$i}"] = $request->file("foto{$i}")->store('penginapan');
+            } elseif ($i === 1) {
+                // Foto1 wajib diisi
+                return back()->withErrors(['foto1' => 'Foto utama wajib diupload']);
+            }
+        }
+
+        Penginapan::create($data);
+
+        return redirect()->route('penginapan.index')->with('success', 'Penginapan berhasil ditambahkan');
+    }
+
+    public function edit(Penginapan $penginapan)
+    {
+        $greeting = $this->getGreeting();
+        return view('be.penginapan.edit', [
+            'title' => 'Edit Penginapan',
+            'penginapan' => $penginapan,
+            'greeting' => $greeting,
+        ]);
+    }
+
+    public function update(Request $request, Penginapan $penginapan)
+    {
+        $request->validate([
+            'nama_penginapan' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'fasilitas' => 'required|string|max:255',
+            'foto1' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto2' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto3' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto4' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto5' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Redirect ke halaman lain dengan pesan sukses
-        return redirect()->route('penginapan.index')->with('success', 'Penginapan berhasil ditambahkan.');
+        $data = $request->only(['nama_penginapan', 'deskripsi', 'fasilitas']);
+
+        // Update foto
+        for ($i = 1; $i <= 5; $i++) {
+            if ($request->hasFile("foto{$i}")) {
+                // Hapus foto lama
+                if ($penginapan["foto{$i}"]) {
+                    Storage::delete($penginapan["foto{$i}"]);
+                }
+                $data["foto{$i}"] = $request->file("foto{$i}")->store('penginapan');
+            } else {
+                // Pertahankan foto lama jika tidak diupdate
+                $data["foto{$i}"] = $penginapan["foto{$i}"];
+            }
+        }
+
+        $penginapan->update($data);
+
+        return redirect()->route('penginapan.index')->with('success', 'Penginapan berhasil diperbarui');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function destroy(Penginapan $penginapan)
     {
-        //
+        // Hapus file foto
+        for ($i = 1; $i <= 5; $i++) {
+            if ($penginapan["foto{$i}"]) {
+                Storage::delete($penginapan["foto{$i}"]);
+            }
+        }
+
+        $penginapan->delete();
+
+        return redirect()->route('penginapan.index')->with('success', 'Penginapan berhasil dihapus');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    private function getGreeting()
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $now = Carbon::now();
+        return match (true) {
+            $now->hour >= 5 && $now->hour < 12 => 'Selamat Pagi',
+            $now->hour >= 12 && $now->hour < 18 => 'Selamat Siang',
+            default => 'Selamat Malam',
+        };
     }
 }

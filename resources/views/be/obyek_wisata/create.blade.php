@@ -63,7 +63,7 @@
                                 <input type="file" name="foto5" id="foto5" class="form-control">
                             </div>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="{{ route('obyek_wisata.index') }}" class="btn btn-secondary">Batal</a>
+                            <a href="{{ route('obyek_wisata.manage') }}" class="btn btn-secondary">Batal</a>
                         </form>
                     </div>
                 </div>

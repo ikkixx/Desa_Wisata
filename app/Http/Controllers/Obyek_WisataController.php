@@ -13,7 +13,7 @@ class Obyek_WisataController extends Controller
     public function index()
     {
         $obyek_wisata = \App\Models\ObyekWisata::all(); // Fetch all obyek wisata
-        return view('obyek_wisata.index', compact('obyek_wisata')); // Pass data to view
+        return view('be.obyek_wisata.index', compact('obyek_wisata')); // Pass data to view
     }
 
     /**
@@ -22,7 +22,7 @@ class Obyek_WisataController extends Controller
     public function create()
     {
         $kategori_wisata = \App\Models\KategoriWisata::all(); // Fetch kategori wisata
-        return view('obyek_wisata.create', compact('kategori_wisata')); // Pass data to view
+        return view('be.obyek_wisata.create', compact('kategori_wisata')); // Pass data to view
     }
 
     /**

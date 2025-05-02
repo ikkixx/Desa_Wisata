@@ -172,7 +172,6 @@
 
                         <button
                             type="submit"
-                            href="{{ route('reservasi.create') }}"
                             class="btn btn-light btn-block waves-effect waves-light">
                             Sign Up
                         </button>
@@ -195,7 +194,7 @@
             </div>
             <div class="card-footer text-center py-3">
                 <p class="text-warning mb-0">
-                    Already have an account? <a href="/login"> Sign In here</a>
+                    Already have an account? <a href="{{route ('login')}}"> Sign In here</a>
                 </p>
             </div>
         </div>

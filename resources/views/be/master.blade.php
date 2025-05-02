@@ -196,8 +196,8 @@
                                                 alt="user avatar" />
                                         </div>
                                         <div class="media-body">
-                                            <h6 class="mt-2 user-title">Sarajhon Mccoy</h6>
-                                            <p class="user-subtitle">mccoy@example.com</p>
+                                            <h6 class="mt-2 user-title"></h6>
+                                            <p class="user-subtitle"></p>
                                         </div>
                                     </div>
                                 </a>
@@ -451,11 +451,11 @@
     <!--End Back To Top Button-->
 
     <!--Start footer-->
-    <footer class="footer">
+    <!-- <footer class="footer">
         <div class="container">
             <div class="text-center">Copyright © 2018 Dashtreme Admin</div>
         </div>
-    </footer>
+    </footer> -->
     <!--End footer-->
 
     <!--start color switcher-->
@@ -495,7 +495,27 @@
     <!--end color switcher-->
     </div>
     <!--End wrapper-->
-
+    <!-- SweetAlert 2 -->
+    <script>
+        function deleteConfirm(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit the form after confirmation
+                    document.getElementById('deleteForm' + id).submit();
+                }
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Bootstrap core JavaScript-->
     <script src="{{asset('be/js/jquery.min.js')}}"></script>
     <script src="{{asset('be/js/popper.min.js')}}"></script>

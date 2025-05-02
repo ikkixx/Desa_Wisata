@@ -22,8 +22,8 @@ class CheckUserLevel
                         return redirect('/admin');
                     case 'bendahara':
                         return redirect('/bendahara');
-                    case 'pemilik':
-                        return redirect('/pemilik');
+                    case 'owner':
+                        return redirect('/owner');
                     case 'pelanggan':
                         return redirect('/pelanggan');
                     default:
@@ -33,5 +33,5 @@ class CheckUserLevel
         }
 
         return $next($request);
-    }                               
+    }
 }

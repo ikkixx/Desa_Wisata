@@ -2,88 +2,164 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Pelanggan;
+use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class UsersController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-{
-    $routeName = $request->route()->getName();
+    public function index()
+    {
+        $users = User::with(['pelanggan', 'karyawan'])->get();
+        $greeting = $this->getGreeting();
 
-    switch ($routeName) {
-        case 'admin':
-            return view('be.admin.index');
-        case 'reservasi':
-            return view('reservasi.index');
-        case 'users':
-            return view('users.index');
-        case 'pelanggan':
-            return view('pelanggan.index');
-        case 'obyek_wisata':
-            return view('obyek_wisata.index');
-        case 'paket_wisata':
-            return view('paket_wisata.index');
-        case 'karyawan':
-            return view('karyawan.index');
-        case 'kategori_wisata':
-            return view('kategori_wisata.index');
-        case 'berita':
-            return view('berita.index');
-        case 'penginapan':
-            return view('penginapan.index');
-        default:
-            return view('pelanggan.index');
+        return view('be.manage.index', [
+            'title' => 'User Management',
+            'users' => $users,
+            'greeting' => $greeting,
+        ]);
     }
-}
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $greeting = $this->getGreeting();
+        return view('be.manage.create', [
+            'title' => 'User Management Create',
+            'greeting' => $greeting,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'no_hp' => 'required|string|max:15|unique:users,no_hp',
+            'password' => 'required|min:6|confirmed',
+            'level' => 'required|in:admin,bendahara,owner,pelanggan,karyawan',
+            'jabatan' => 'required_if:level,karyawan|nullable|string|in:administrasi,bendahara,pemilik',
+            'alamat' => 'nullable|string',
+        ]);
+
+        $originalLevel = $request->level;
+        $finalLevel = $originalLevel;
+
+        // Jika karyawan, mapping jabatan ke level enum user
+        if ($originalLevel === 'karyawan') {
+            $mapping = [
+                'administrasi' => 'admin',
+                'bendahara' => 'bendahara',
+                'pemilik' => 'owner',
+            ];
+
+            if (!isset($mapping[$request->jabatan])) {
+                return back()->withErrors(['jabatan' => 'Jabatan tidak valid untuk karyawan']);
+            }
+
+            $finalLevel = $mapping[$request->jabatan];
+        }
+
+        // Buat user dengan level hasil mapping
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'alamat' => $request->alamat,
+            'password' => Hash::make($request->password),
+            'level' => $finalLevel,
+        ]);
+
+        // Buat entri pelanggan jika level asli adalah pelanggan
+        if ($originalLevel === 'pelanggan') {
+            Pelanggan::create([
+                'id_user' => $user->id,
+                'nama_lengkap' => $request->name,
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat ?? '',
+            ]);
+        }
+
+        // Buat entri karyawan jika level asli adalah karyawan
+        if ($originalLevel === 'karyawan') {
+            Karyawan::create([
+                'id_user' => $user->id,
+                'nama_karyawan' => $request->name,
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat ?? '',
+                'jabatan' => $request->jabatan,
+            ]);
+        }
+
+        return redirect()->route('user.manage')->with('success', 'User created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+
+    public function edit($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $greeting = $this->getGreeting();
+
+        return view('be.manage.edit', [
+            'title' => 'User Management Edit',
+            'user' => $user,
+            'greeting' => $greeting,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'no_hp' => 'required|string|max:15|unique:users,no_hp,' . $user->id,
+            'level' => 'required|in:admin,bendahara,owner,pelanggan,karyawan',
+            'alamat' => 'nullable|string',
+            'jabatan' => 'required_if:level,admin,bendahara,owner,karyawan|nullable|string|in:administrasi,bendahara,pemilik,staff,kasir',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'level' => $request->level,
+            'alamat' => $request->alamat,
+        ];
+
+        $user->update($data);
+
+        return redirect()->route('user.manage')->with('success', 'User updated successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        if ($user->pelanggan) {
+            $user->pelanggan->delete();
+        }
+        if ($user->karyawan) {
+            $user->karyawan->delete();
+        }
+
+        $user->delete();
+
+        return redirect()->route('user.manage')->with('success', 'User deleted successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    private function getGreeting()
     {
-        //
+        $now = Carbon::now();
+        if ($now->hour >= 5 && $now->hour < 12) {
+            return 'Good Morning';
+        } elseif ($now->hour >= 12 && $now->hour < 18) {
+            return 'Good Evening';
+        } else {
+            return 'Good Night';
+        }
     }
 }

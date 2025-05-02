@@ -12,14 +12,14 @@ class ReservasiController extends Controller
     public function index()
     {
         $reservasi = Reservasi::with(['pelanggan', 'paket'])->get();
-        return view('reservasi.index', compact('reservasi'));
+        return view('be.reservasi.index', compact('reservasi'));
     }
 
     public function create()
     {
         $pelanggan = Pelanggan::all();
         $paket = PaketWisata::all();
-        return view('reservasi.create', compact('pelanggan', 'paket'));
+        return view('be.reservasi.index', compact('pelanggan', 'paket'));
     }
 
     public function store(Request $request)
@@ -34,7 +34,7 @@ class ReservasiController extends Controller
         ]);
 
         Reservasi::create($request->all());
-        return redirect()->route('reservasi.index')->with('success', 'Reservasi berhasil ditambahkan.');
+        return redirect()->route('reservasi.manage')->with('success', 'Reservasi berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -58,13 +58,13 @@ class ReservasiController extends Controller
 
         $reservasi = Reservasi::findOrFail($id);
         $reservasi->update($request->all());
-        return redirect()->route('reservasi.index')->with('success', 'Reservasi berhasil diperbarui.');
+        return redirect()->route('reservasi.manage')->with('success', 'Reservasi berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $reservasi = Reservasi::findOrFail($id);
         $reservasi->delete();
-        return redirect()->route('reservasi.index')->with('success', 'Reservasi berhasil dihapus.');
+        return redirect()->route('reservasi.manage')->with('success', 'Reservasi berhasil dihapus.');
     }
 }

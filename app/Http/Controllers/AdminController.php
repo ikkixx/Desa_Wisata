@@ -11,7 +11,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('be.admin.index', [
+        return view('be.users.admin.index', [
             'title' => 'Admin',
         ]);
     }

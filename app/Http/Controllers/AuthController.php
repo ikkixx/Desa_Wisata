@@ -30,7 +30,9 @@ class AuthController extends Controller
             'password' => 'required|min:6',
             'level' => 'required|in:admin,bendahara,pelanggan,owner',
             'no_hp' => 'required|string|max:15',
+            'alamat' => 'string',
         ]);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -46,16 +48,30 @@ class AuthController extends Controller
                 'id_user' => $user->id,
                 'nama_lengkap' => $request->name,
                 'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat,
+                'alamat' => $request->alamat ?? '',
+
             ]);
         } else {
+
+            $mappingLevelToJabatan = [
+                'admin' => 'administrasi',
+                'bendahara' => 'bendahara',
+                'owner' => 'pemilik',
+            ];
+
+            $jabatan = $mappingLevelToJabatan[$request->level] ?? null;
+
+            if (!$jabatan) {
+                return back()->withErrors(['level' => 'Invalid role for karyawan.']);
+            }
+
             // Insert ke tabel karyawan
             Karyawan::create([
                 'id_user' => $user->id,
                 'nama_karyawan' => $request->name,
                 'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat ?? '-',
-                'jabatan' => $request->level,
+                'alamat' => $request->alamat ?? '',
+                'jabatan' => $jabatan,
             ]);
         }
 
@@ -74,6 +90,8 @@ class AuthController extends Controller
             default:
                 return redirect('/')->with('success', 'Registrasi berhasil!');
         }
+        return back()->withErrors(['email' => 'Email atau Password Salah.']);
+        return back()->withErrors('password', 'Password minimal 8 karakter.');
     }
 
 
@@ -107,7 +125,6 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->forget('loginId');
         $request->session()->invalidate();
         $request->session()->regenerateToken();

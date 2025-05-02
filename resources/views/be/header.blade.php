@@ -52,6 +52,11 @@
                     </li>
                 </ul>
             </li>
+            @if(session('loginId'))
+            <?php
+            // Ambil data pengguna berdasarkan ID yang ada di session
+            $user = \App\Models\User::find(session('loginId'));
+            ?>
             <li class="nav-item">
                 <a
                     class="nav-link dropdown-toggle dropdown-toggle-nocaret"
@@ -73,8 +78,8 @@
                                         alt="user avatar" />
                                 </div>
                                 <div class="media-body">
-                                    <h6 class="mt-2 user-title">Sarajhon Mccoy</h6>
-                                    <p class="user-subtitle">mccoy@example.com</p>
+                                    <h6 class="mt-2 user-title">{{ $user->name }}</h6>
+                                    <p class="user-subtitle">{{ $user->email }}</p>
                                 </div>
                             </div>
                         </a>
@@ -105,6 +110,7 @@
                     </li>
                 </ul>
             </li>
+            @endif
         </ul>
     </nav>
 </header>

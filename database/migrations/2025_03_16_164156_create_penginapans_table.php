@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_penginapan', 255)->unique();
             $table->text('deskripsi');
-            $table->text('fasilitas');
+            $table->text('fasilitas')->nullable();
             $table->text('foto1')->nullable();
             $table->text('foto2')->nullable();
             $table->text('foto3')->nullable();

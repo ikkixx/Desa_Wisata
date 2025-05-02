@@ -8,7 +8,7 @@
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="d-flex justify-content-end mb-3">
-            <a href="{{ route('user.create') }}" class="btn btn-primary">
+            <a href="{{ route('user_create') }}" class="btn btn-primary">
                 <i class="fa fa-plus-circle me-2"></i>Add User
             </a>
         </div>
@@ -81,10 +81,10 @@
 
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('user.edit', $data->id) }}" class="btn btn-dark btn-sm">
+                                                <a href="{{ route('user_edit', $data->id) }}" class="btn btn-dark btn-sm">
                                                     <i class="fa fa-pencil-square-o"></i> Edit
                                                 </a>
-                                                <form action="{{ route('user.destroy', $data->id) }}" method="POST" id="deleteForm{{ $data->id }}" style="display: inline;">
+                                                <form action="{{ route('user_destroy', $data->id) }}" method="POST" id="deleteForm{{ $data->id }}" style="display: inline;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" class="btn btn-danger btn-fw" onclick="deleteConfirm({{ $data->id }})">

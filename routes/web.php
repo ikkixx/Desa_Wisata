@@ -4,9 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\CheckUserLevel;
 use App\Http\Middleware\CheckPelanggan;
-use App\Http\Controllers\PaketWisataController;
-use App\Http\Controllers\Obyek_WisataController;
-
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -16,24 +13,12 @@ use App\Http\Controllers\Obyek_WisataController;
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::resource('paket_wisata', App\Http\Controllers\PaketWisataController::class);
-Route::resource('kategori-wisata', App\Http\Controllers\Kategori_WisataController::class); // Ensure this points to the correct controller
-Route::resource('berita', App\Http\Controllers\BeritaController::class)->names([
-    'index' => 'berita.index',
-    'create' => 'berita.create',
-    'store' => 'berita.store',
-    'show' => 'berita.show',
-    'edit' => 'berita.edit',
-    'update' => 'berita.update',
-    'destroy' => 'berita.destroy',
-]);
+Route::resource('obyek-wisata', App\Http\Controllers\Obyek_WisataController::class);
+Route::resource('paket-wisata', App\Http\Controllers\Paket_WisataController::class);
+Route::resource('kategori-wisata', App\Http\Controllers\Kategori_WisataController::class);
+Route::resource('berita', App\Http\Controllers\BeritaController::class);
 Route::resource('penginapan', App\Http\Controllers\PenginapanController::class);
-Route::get('/users', [App\Http\Controllers\UsersController::class, 'index'])->name('users');
-Route::get('/karyawan', [App\Http\Controllers\KaryawanController::class, 'index'])->name('karyawan');
-Route::get('/kategori_wisata', [App\Http\Controllers\Kategori_WisataController::class, 'index'])->name('kategori_wisata');
-Route::get('/kategori_berita', [App\Http\Controllers\Kategori_BeritaController::class, 'index'])->name('kategori_berita');
-
-
+Route::resource('reservasi', App\Http\Controllers\ReservasiController::class);
 
 
 // Registrasi (Hanya untuk Pelanggan)
@@ -76,7 +61,8 @@ Route::get('/profilepelanggan', [App\Http\Controllers\PelangganController::class
     ->middleware(['auth', CheckPelanggan::class]);
 
 Route::middleware('auth')->group(function () {
-    Route::resource('user-manage', App\Http\Controllers\UsersController::class)->names([
+    // Users Routes
+    Route::resource('user_manage', App\Http\Controllers\UsersController::class)->names([
         'index' => 'user.manage',
         'create' => 'user.create',
         'edit' => 'user.edit',
@@ -84,38 +70,95 @@ Route::middleware('auth')->group(function () {
         'store' => 'user.store',
         'update' => 'user.update',
     ]);
+
+    // Reservasi Routes
+    Route::resource('reservasi', App\Http\Controllers\ReservasiController::class)->names([
+        'index' => 'reservasi.manage',
+        'create' => 'reservasi.create',
+        'store' => 'reservasi.store',
+        'show' => 'reservasi.show',
+        'edit' => 'reservasi.edit',
+        'update' => 'reservasi.update',
+        'destroy' => 'reservasi.destroy',
+    ]);
+
+    // routes/web.php
+    Route::resource('penginapan', \App\Http\Controllers\PenginapanController::class)
+        ->names([
+            'index' => 'penginapan.manage',
+            'create' => 'penginapan.create',
+            'store' => 'penginapan.store',
+            'edit' => 'penginapan.edit',
+            'update' => 'penginapan.update',
+            'destroy' => 'penginapan.destroy',
+        ]);
+
+    // Objek Wisata Routes
+    Route::resource('obyek-wisata', App\Http\Controllers\Obyek_WisataController::class)->names([
+        'index' => 'obyek_wisata.manage',
+        'create' => 'obyek_wisata.create',
+        'store' => 'obyek_wisata.store',
+        'show' => 'obyek_wisata.show',
+        'edit' => 'obyek_wisata.edit',
+        'update' => 'obyek_wisata.update',
+        'destroy' => 'obyek_wisata.destroy',
+    ]);
+
+    // Kategori Wisata Routes
+    Route::resource('kategori-wisata', App\Http\Controllers\Kategori_WisataController::class)->except(['show'])->names([
+        'index' => 'kategori_wisata.manage',
+        'create' => 'kategori_wisata.create',
+        'store' => 'kategori_wisata.store',
+        'edit' => 'kategori_wisata.edit',
+        'update' => 'kategori_wisata.update',
+        'destroy' => 'kategori_wisata.destroy',
+    ]);
+
+    // Berita Routes
+    Route::resource('berita', App\Http\Controllers\BeritaController::class)->names([
+        'index' => 'berita.manage',
+        'create' => 'berita.create',
+        'store' => 'berita.store',
+        'show' => 'berita.show',
+        'edit' => 'berita.edit',
+        'update' => 'berita.update',
+        'destroy' => 'berita.destroy',
+    ]);
+
+    // Kategori Berita Routes
+    Route::resource('kategori-berita', App\Http\Controllers\Kategori_BeritaController::class)->except(['show'])->names([
+        'index' => 'kategori_berita.manage',
+        'create' => 'kategori_berita.create',
+        'store' => 'kategori_berita.store',
+        'edit' => 'kategori_berita.edit',
+        'update' => 'kategori_berita.update',
+        'destroy' => 'kategori_berita.destroy',
+    ]);
 });
 
-Route::resource('obyek-wisata', App\Http\Controllers\Obyek_WisataController::class)->names([
-    'index' => 'obyek_wisata.index',
-    'create' => 'obyek_wisata.create',
-    'store' => 'obyek_wisata.store',
-    'show' => 'obyek_wisata.show',
-    'edit' => 'obyek_wisata.edit',
-    'update' => 'obyek_wisata.update',
-    'destroy' => 'obyek_wisata.destroy',
+// Paket Wisata Routes
+Route::resource('paket_wisata', App\Http\Controllers\Paket_WisataController::class)->names([
+    'index' => 'paket_wisata.manage',
+    'create' => 'paket_wisata.create',
+    'store' => 'paket_wisata.store',
+    'show' => 'paket_wisata.show',
+    'edit' => 'paket_wisata.edit',
+    'update' => 'paket_wisata.update',
+    'destroy' => 'paket_wisata.destroy',
 ]);
 
-Route::resource('kategori-berita', App\Http\Controllers\Kategori_BeritaController::class)->names([
-    'index' => 'kategori_berita.index',
-    'create' => 'kategori_berita.create',
-    'store' => 'kategori_berita.store',
-    'show' => 'kategori_berita.show',
-    'edit' => 'kategori_berita.edit',
-    'update' => 'kategori_berita.update',
-    'destroy' => 'kategori_berita.destroy',
+// Karyawan Routes
+Route::resource('karyawan', App\Http\Controllers\KaryawanController::class)->names([
+    'index' => 'karyawan.manage',
+    'create' => 'karyawan.create',
+    'store' => 'karyawan.store',
+    'edit' => 'karyawan.edit',
+    'update' => 'karyawan.update',
+    'destroy' => 'karyawan.destroy',
 ]);
 
-Route::resource('penginapan', App\Http\Controllers\PenginapanController::class)->names([
-    'index' => 'penginapan.index',
-    'create' => 'penginapan.create',
-    'store' => 'penginapan.store',
-    'show' => 'penginapan.show',
-    'edit' => 'penginapan.edit',
-    'update' => 'penginapan.update',
-    'destroy' => 'penginapan.destroy',
-]);
-
-Route::resource('reservasi', App\Http\Controllers\ReservasiController::class);
-Route::resource('pelanggan', App\Http\Controllers\PelangganController::class);
-Route::resource('karyawan', App\Http\Controllers\KaryawanController::class); // Define the resource route for Karyawan
+Route::put('user-manage/{user}', [App\Http\Controllers\UsersController::class, 'update'])->name('user.update');
+    
+// Route::prefix('admin')->middleware(['auth', CheckUserLevel::class . ':admin'])->group(function () {
+    
+// });

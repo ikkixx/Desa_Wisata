@@ -71,12 +71,11 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="#contact_us">Kontak Kami</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">Register</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href={{ route('login') }}>Login</a>
-                                </li>
+                                @if(session('loginId'))
+                                <?php
+                                // Ambil data pengguna berdasarkan ID yang ada di session
+                                $user = \App\Models\User::find(session('loginId'));
+                                ?>
                                 <li class="nav-item">
                                     <form action="{{route('logout')}}" method="POST">
                                         @csrf
@@ -86,6 +85,14 @@
                                         </button>
                                     </form>
                                 </li>
+                                @else
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">Register</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href={{ route('login') }}>Login</a>
+                                </li>
+                                @endif
                             </ul>
                             <!-- <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4 mb-3 mb-lg-0">
                                 <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit"></button>

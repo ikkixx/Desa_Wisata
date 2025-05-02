@@ -56,7 +56,7 @@
                         <input type="number" name="total_bayar" id="total_bayar" class="form-control" value="{{ $reservasi->total_bayar }}" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Simpan</button>
-                    <a href="{{ route('reservasi.index') }}" class="btn btn-secondary">Batal</a>
+                    <a href="{{ route('reservasi.manage') }}" class="btn btn-secondary">Batal</a>
                 </form>
             </div>
         </div>

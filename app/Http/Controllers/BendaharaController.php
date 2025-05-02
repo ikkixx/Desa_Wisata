@@ -11,8 +11,7 @@ class BendaharaController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        {
+    { {
             $now = Carbon::now();
 
             $greeting = '';
@@ -25,7 +24,7 @@ class BendaharaController extends Controller
                 $greeting = 'Good Night';
             }
 
-            return view('be.bendahara.index', [
+            return view('be.users.bendahara.index', [
                 'title' => 'Bendahara',
                 'greeting' => $greeting,
             ]);

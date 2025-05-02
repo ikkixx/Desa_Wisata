@@ -2,65 +2,87 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\PaketWisata;
+use Illuminate\Http\Request;
 
 class Paket_WisataController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $paketWisata = PaketWisata::all(); // Fetch data dari database
-    return view('paket_wisata.index', compact('paketWisata'));
+        $paketWisata = PaketWisata::all();
+        return view('be.paket_wisata.index', compact('paketWisata'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('be.paket_wisata.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama_paket' => 'required',
+            'deskripsi' => 'required',
+            'fasilitas' => 'required',
+            'harga_per_pack' => 'required|numeric',
+            'foto1' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $paket = new PaketWisata;
+        $paket->nama_paket = $request->nama_paket;
+        $paket->deskripsi = $request->deskripsi;
+        $paket->fasilitas = $request->fasilitas;
+        $paket->harga_per_pack = $request->harga_per_pack;
+
+        if ($request->hasFile('foto1')) {
+            $foto1 = $request->file('foto1');
+            $foto1Path = $foto1->store('paket_wisata', 'public');
+            $paket->foto1 = $foto1Path;
+        }
+
+        $paket->save();
+
+        return redirect()->route('paket_wisata.manage')->with('success', 'Paket Wisata berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit($id)
     {
-        //
+        $paket = PaketWisata::findOrFail($id);
+        return view('paket_wisata.edit', compact('paket'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nama_paket' => 'required',
+            'deskripsi' => 'required',
+            'fasilitas' => 'required',
+            'harga_per_pack' => 'required|numeric',
+            'foto1' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $paket = PaketWisata::findOrFail($id);
+        $paket->nama_paket = $request->nama_paket;
+        $paket->deskripsi = $request->deskripsi;
+        $paket->fasilitas = $request->fasilitas;
+        $paket->harga_per_pack = $request->harga_per_pack;
+
+        if ($request->hasFile('foto1')) {
+            $foto1 = $request->file('foto1');
+            $foto1Path = $foto1->store('paket_wisata', 'public');
+            $paket->foto1 = $foto1Path;
+        }
+
+        $paket->save();
+
+        return redirect()->route('paket_wisata.manage')->with('success', 'Paket Wisata berhasil diupdate.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $paket = PaketWisata::findOrFail($id);
+        $paket->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('paket_wisata.manage')->with('success', 'Paket Wisata berhasil dihapus.');
     }
 }
