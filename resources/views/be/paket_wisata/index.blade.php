@@ -11,7 +11,9 @@
     <div class="container-fluid"></div>
     <div class="container">
         <h1 class="mb-4">Daftar Paket Wisata</h1>
+        @if(auth()->user()->level !== 'owner')
         <a href="{{ route('paket_wisata.create') }}" class="btn btn-primary mb-3">Tambah Paket Wisata</a> <!-- Corrected route name -->
+        @endif
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -36,12 +38,14 @@
                         <img src="{{ asset('storage/' . $paket->foto1) }}" alt="Foto 1" width="50">
                     </td>
                     <td>
+                        @if(auth()->user()->level !== 'owner')
                         <a href="{{ route('paket_wisata.edit', $paket->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('paket_wisata.destroy', $paket->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

@@ -113,6 +113,10 @@ class AuthController extends Controller
             switch (Auth::user()->level) {
                 case 'admin':
                     return redirect()->intended('/admin');
+                case 'bendahara':
+                    return redirect()->intended('/bendahara');
+                case 'owner':
+                    return redirect()->intended('/owner');
                 default:
                     return redirect('/home');
             }

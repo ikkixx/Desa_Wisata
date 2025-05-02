@@ -49,7 +49,7 @@
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="{{ Route('kategori_wisata.manage') }}">
                 <i class="zmdi zmdi-map"></i> <span>Kategori Wisata</span>
             </a>
         </li>
@@ -65,7 +65,7 @@
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="{{ Route('kategori_wisata.manage') }}">
                 <i class="zmdi zmdi-map"></i> <span>Kategori Wisata</span>
             </a>
         </li>

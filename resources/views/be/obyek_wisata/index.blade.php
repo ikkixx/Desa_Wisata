@@ -18,7 +18,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Daftar Obyek Wisata</h4>
+                        @if(auth()->user()->level !== 'owner')
                         <a href="{{ route('obyek_wisata.create') }}" class="btn btn-primary mb-3">Tambah Obyek Wisata</a> <!-- Add button -->
+                        @endif
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
@@ -49,12 +51,14 @@
                                             <img src="{{ asset('storage/' . $wisata->foto5) }}" alt="Foto 5" width="50">
                                         </td>
                                         <td>
+                                        @if(auth()->user()->level !== 'owner')
                                             <a href="{{ route('obyek_wisata.edit', $wisata->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                             <form action="{{ route('obyek_wisata.destroy', $wisata->id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                             </form>
+                                        @endif
                                         </td>
                                     </tr>
                                     @endforeach

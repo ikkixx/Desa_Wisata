@@ -10,7 +10,7 @@ class Kategori_WisataController extends Controller
     public function index()
     {
         $kategoriWisata = KategoriWisata::all();
-        return view('kategori_wisata.index', compact('kategoriWisata'));
+        return view('be.kategori_wisata.index', compact('kategoriWisata'));
     }
 
     public function create()

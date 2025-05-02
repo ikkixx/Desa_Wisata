@@ -14,7 +14,9 @@
         <h1 class="mb-4">Manajemen Reservasi</h1>
 
         <!-- Tambah Button -->
+        @if(auth()->user()->level !== 'owner')
         <a href="{{ route('reservasi.create') }}" class="btn btn-primary mb-4">Tambah Reservasi</a>
+        @endif
 
         <!-- Existing table for reservations -->
         <table class="table table-bordered">
@@ -53,12 +55,14 @@
                         @endif
                     </td>
                     <td>
+                        @if(auth()->user()->level !== 'owner')
                         <a href="{{ route('reservasi.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('reservasi.destroy', $item->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                         </form>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

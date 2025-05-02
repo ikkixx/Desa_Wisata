@@ -434,7 +434,7 @@
 
         <!--   -->
         <!--End Row-->
-
+        @yield("header")
         <!--End Dashboard Content-->
         @yield("content")
 

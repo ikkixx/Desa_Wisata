@@ -26,8 +26,6 @@ class CheckUserLevel
                         return redirect('/owner');
                     case 'pelanggan':
                         return redirect('/pelanggan');
-                    default:
-                        return redirect('/home'); // Default fallback
                 }
             }
         }

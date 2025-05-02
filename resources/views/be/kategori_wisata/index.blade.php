@@ -11,7 +11,9 @@
     <div class="container-fluid"></div>
     <div class="container">
         <h1 class="mb-4">Manajemen Kategori Wisata</h1>
+        @if(auth()->user()->level !== 'owner')
         <a href="{{ route('kategori-wisata.create') }}" class="btn btn-primary mb-3">Tambah Kategori Wisata</a> <!-- Add button -->
+        @endif
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -30,12 +32,14 @@
                     <td>{{ $kategori->created_at->format('d-m-Y H:i') }}</td>
                     <td>{{ $kategori->updated_at->format('d-m-Y H:i') }}</td>
                     <td>
+                    @if(auth()->user()->level !== 'owner')
                         <a href="{{ route('kategori-wisata.edit', $kategori->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('kategori-wisata.destroy', $kategori->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                         </form>
+                    @endif
                     </td>
                 </tr>
                 @endforeach

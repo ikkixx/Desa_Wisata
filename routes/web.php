@@ -41,6 +41,10 @@ Route::get('/dashboard', function () {
     if ($user->level === 'bendahara') {
         return redirect()->route('bendahara');
     }
+    if ($user->level === 'owner') {
+        return redirect()->route('owner');
+    }
+    
 
     return redirect()->back()->withErrors('Unauthorized access.');
 })->middleware('auth')->name('dashboard');
@@ -105,7 +109,7 @@ Route::middleware('auth')->group(function () {
     ]);
 
     // Kategori Wisata Routes
-    Route::resource('kategori-wisata', App\Http\Controllers\Kategori_WisataController::class)->except(['show'])->names([
+    Route::resource('kategori_wisata', App\Http\Controllers\Kategori_WisataController::class)->except(['show'])->names([
         'index' => 'kategori_wisata.manage',
         'create' => 'kategori_wisata.create',
         'store' => 'kategori_wisata.store',
@@ -126,7 +130,7 @@ Route::middleware('auth')->group(function () {
     ]);
 
     // Kategori Berita Routes
-    Route::resource('kategori-berita', App\Http\Controllers\Kategori_BeritaController::class)->except(['show'])->names([
+    Route::resource('kategori_berita', App\Http\Controllers\Kategori_BeritaController::class)->except(['show'])->names([
         'index' => 'kategori_berita.manage',
         'create' => 'kategori_berita.create',
         'store' => 'kategori_berita.store',

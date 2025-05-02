@@ -10,9 +10,8 @@ class OwnerController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        {
-            return view('fe.home.index', [
+    { {
+            return view('be.users.owner.index', [
                 'title' => 'Owner'
             ]);
         }
