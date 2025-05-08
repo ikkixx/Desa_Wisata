@@ -41,7 +41,7 @@
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->pelanggan->nama }}</td>
                     <td>{{ $item->paket->nama_paket }}</td>
-                    <td>{{ $item->tgl_reservasi_wisata }}</td>
+                    <td>{{ $item->tgl_reservasi }}</td>
                     <td>{{ $item->jumlah_peserta }}</td>
                     <td>{{ number_format($item->harga, 0, ',', '.') }}</td>
                     <td>{{ $item->nilai_diskon }}%</td>

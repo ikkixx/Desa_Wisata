@@ -23,7 +23,7 @@
                         <select name="id_pelanggan" id="id_pelanggan" class="form-control" required>
                             <option value="" disabled selected>Pilih Pelanggan</option>
                             @foreach($pelanggan as $p)
-                            <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                            <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -37,8 +37,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="tgl_reservasi_wisata">Tanggal Reservasi</label>
-                        <input type="date" name="tgl_reservasi_wisata" id="tgl_reservasi_wisata" class="form-control" required>
+                        <label for="tgl_reservasi">Tanggal Reservasi</label>
+                        <input type="date" name="tgl_reservasi" id="tgl_reservasi" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="jumlah_peserta">Jumlah Peserta</label>

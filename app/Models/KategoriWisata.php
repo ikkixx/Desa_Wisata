@@ -9,9 +9,19 @@ class KategoriWisata extends Model
 {
     use HasFactory;
 
-    protected $table = 'kategori_wisatas'; // Ensure this matches your database table name
+    protected $table = 'kategori_wisatas';
 
-    protected $fillable = [
-        'nama_kategori',
-    ];
+    // Sesuaikan dengan nama kolom di database
+    protected $fillable = ['kategori_wisata'];
+    
+    // Opsional: Jika ingin menggunakan nama berbeda di aplikasi
+    public function getNamaKategoriAttribute()
+    {
+        return $this->attributes['kategori_wisata'];
+    }
+    
+    public function setNamaKategoriAttribute($value)
+    {
+        $this->attributes['kategori_wisata'] = $value;
+    }
 }

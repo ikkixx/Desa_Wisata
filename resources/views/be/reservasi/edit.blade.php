@@ -40,8 +40,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="tgl_reservasi_wisata">Tanggal Reservasi</label>
-                        <input type="date" name="tgl_reservasi_wisata" id="tgl_reservasi_wisata" class="form-control" value="{{ $reservasi->tgl_reservasi_wisata }}" required>
+                        <label for="tgl_reservasi">Tanggal Reservasi</label>
+                        <input type="date" name="tgl_reservasi" id="tgl_reservasi" class="form-control" value="{{ $reservasi->tgl_reservasi }}" required>
                     </div>
                     <div class="form-group">
                         <label for="jumlah_peserta">Jumlah Peserta</label>

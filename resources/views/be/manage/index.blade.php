@@ -1,5 +1,7 @@
 @extends('be.master')
-
+@section('header')
+@include('be.header')
+@endsection
 @section('sidebar')
 @include('be.sidebar')
 @endsection

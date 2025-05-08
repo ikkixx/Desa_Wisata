@@ -15,14 +15,14 @@
             </a>
         </li>
 
-        @if (str_contains(Auth::user()->level, 'admin'))
+        @if (Auth::check() && str_contains(Auth::user()->level, 'admin'))
         <li>
             <a href="{{ Route('user.manage') }}">
                 <i class="zmdi zmdi-account"></i> <span>Users</span>
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="{{ Route('berita.manage') }}">
                 <i class="zmdi zmdi-info"></i> <span>Berita</span>
             </a>
         </li>
@@ -37,7 +37,11 @@
                 <i class="zmdi zmdi-hotel"></i> <span>Penginapan</span>
             </a>
         </li>
-        @elseif (str_contains(Auth::user()->level, 'bendahara'))
+        <li>
+            <a href="{{ route('kategori_berita.manage') }}">
+                <i class="zmdi zmdi-map"></i> <span>Kategori Berita</span>
+            </a>
+        @elseif (Auth::check() && str_contains(Auth::user()->level, 'bendahara'))
         <li>
             <a href="{{ Route('paket_wisata.manage') }}">
                 <i class="zmdi zmdi-case"></i> <span>Paket Wisata</span>

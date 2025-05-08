@@ -2,87 +2,145 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PaketWisata;
 use Illuminate\Http\Request;
+use App\Models\PaketWisata;
+use Illuminate\Support\Facades\Storage;
 
 class Paket_WisataController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         $paketWisata = PaketWisata::all();
         return view('be.paket_wisata.index', compact('paketWisata'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         return view('be.paket_wisata.create');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'nama_paket' => 'required',
-            'deskripsi' => 'required',
-            'fasilitas' => 'required',
+            'nama_paket' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'fasilitas' => 'required|string',
             'harga_per_pack' => 'required|numeric',
-            'foto1' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto1' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $paket = new PaketWisata;
-        $paket->nama_paket = $request->nama_paket;
-        $paket->deskripsi = $request->deskripsi;
-        $paket->fasilitas = $request->fasilitas;
-        $paket->harga_per_pack = $request->harga_per_pack;
+        try {
+            $data = $request->all();
+            
+            // Handle file upload
+            if ($request->hasFile('foto1')) {
+                $image = $request->file('foto1');
+                $imageName = time().'.'.$image->getClientOriginalExtension();
+                $path = $image->storeAs('public/paket_wisata', $imageName);
+                $data['foto1'] = 'paket_wisata/'.$imageName;
+            }
 
-        if ($request->hasFile('foto1')) {
-            $foto1 = $request->file('foto1');
-            $foto1Path = $foto1->store('paket_wisata', 'public');
-            $paket->foto1 = $foto1Path;
+            PaketWisata::create($data);
+
+            return redirect()->route('paket_wisata.manage')
+                ->with('success', 'Paket wisata berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal menambahkan paket wisata: '.$e->getMessage())
+                ->withInput();
         }
-
-        $paket->save();
-
-        return redirect()->route('paket_wisata.manage')->with('success', 'Paket Wisata berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
         $paket = PaketWisata::findOrFail($id);
-        return view('paket_wisata.edit', compact('paket'));
+        return view('be.paket_wisata.show', compact('paket'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $paket = PaketWisata::findOrFail($id);
+        return view('be.paket_wisata.edit', compact('paket'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
         $request->validate([
-            'nama_paket' => 'required',
-            'deskripsi' => 'required',
-            'fasilitas' => 'required',
+            'nama_paket' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'fasilitas' => 'required|string',
             'harga_per_pack' => 'required|numeric',
-            'foto1' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto1' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $paket = PaketWisata::findOrFail($id);
-        $paket->nama_paket = $request->nama_paket;
-        $paket->deskripsi = $request->deskripsi;
-        $paket->fasilitas = $request->fasilitas;
-        $paket->harga_per_pack = $request->harga_per_pack;
+        try {
+            $paket = PaketWisata::findOrFail($id);
+            $data = $request->all();
+            
+            // Handle file upload if new image is provided
+            if ($request->hasFile('foto1')) {
+                // Delete old image
+                if ($paket->foto1) {
+                    Storage::delete('public/'.$paket->foto1);
+                }
+                
+                $image = $request->file('foto1');
+                $imageName = time().'.'.$image->getClientOriginalExtension();
+                $path = $image->storeAs('public/paket_wisata', $imageName);
+                $data['foto1'] = 'paket_wisata/'.$imageName;
+            } else {
+                unset($data['foto1']);
+            }
 
-        if ($request->hasFile('foto1')) {
-            $foto1 = $request->file('foto1');
-            $foto1Path = $foto1->store('paket_wisata', 'public');
-            $paket->foto1 = $foto1Path;
+            $paket->update($data);
+
+            return redirect()->route('paket_wisata.manage')
+                ->with('success', 'Paket wisata berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal memperbarui paket wisata: '.$e->getMessage())
+                ->withInput();
         }
-
-        $paket->save();
-
-        return redirect()->route('paket_wisata.manage')->with('success', 'Paket Wisata berhasil diupdate.');
     }
 
-    public function destroy($id)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
-        $paket = PaketWisata::findOrFail($id);
-        $paket->delete();
+        try {
+            $paket = PaketWisata::findOrFail($id);
+            
+            // Delete associated image
+            if ($paket->foto1) {
+                Storage::delete('public/'.$paket->foto1);
+            }
+            
+            $paket->delete();
 
-        return redirect()->route('paket_wisata.manage')->with('success', 'Paket Wisata berhasil dihapus.');
+            return redirect()->route('paket_wisata.manage')
+                ->with('success', 'Paket wisata berhasil dihapus!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal menghapus paket wisata: '.$e->getMessage());
+        }
     }
 }

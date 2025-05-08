@@ -36,7 +36,7 @@
 
 </head>
 
-<body class="bg-theme bg-theme1">
+<body class="bg-theme bg-theme1" id="body">
     <!-- Start wrapper-->
     <div id="wrapper">
         <!--Start sidebar-wrapper-->
@@ -520,7 +520,8 @@
     <script src="{{asset('be/js/jquery.min.js')}}"></script>
     <script src="{{asset('be/js/popper.min.js')}}"></script>
     <script src="{{asset('be/js/bootstrap.min.js')}}"></script>
-
+    <script src="https://lipis.github.io/bootstrap-sweetalert/dist/sweetalert.js"></script>
+    <link rel="stylesheet" href="https://lipis.github.io/bootstrap-sweetalert/dist/sweetalert.css">
     <!-- simplebar js -->
     <script src="{{asset('be/plugins/simplebar/js/simplebar.js')}}"></script>
     <!-- sidebar-menu js -->

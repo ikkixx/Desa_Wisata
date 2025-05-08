@@ -4,25 +4,25 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Dashtreme Admin - Free Dashboard for Bootstrap 4 by Codervent</title>
+    <title>Register Kiytrip</title>
     <!-- loader-->
-    <link href="be/css/pace.min.css" rel="stylesheet" />
-    <script src="be/js/pace.min.js"></script>
+    <link href="{{asset('be/css/pace.min.css')}}" rel="stylesheet" />
+    <script src="{{asset('be/js/pace.min.js')}}"></script>
     <!--favicon-->
-    <link rel="icon" href="be/images/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="{{asset('be/images/kiytrip.png')}}" type="image/x-icon" />
     <!-- Bootstrap core CSS-->
-    <link href="be/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{{asset('be/css/bootstrap.min.css')}}" rel="stylesheet" />
     <!-- animate CSS-->
-    <link href="be/css/animate.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('be/css/animate.css')}}" rel="stylesheet" type="text/css" />
     <!-- Icons CSS-->
-    <link href="be/css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('be/css/icons.css')}}" rel="stylesheet" type="text/css" />
     <!-- Custom Style-->
-    <link href="be/css/app-style.css" rel="stylesheet" />
+    <link href="{{asset('be/css/app-style.css')}}" rel="stylesheet" />
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body class="bg-theme bg-theme1">
@@ -42,12 +42,12 @@
             <div class="card-body">
                 <div class="card-content p-2">
                     <div class="text-center">
-                        <img src="be/images/logo-icon.png" alt="logo icon" />
+                        <img src="{{asset('be/images/kiytrip.png')}}" alt="logo icon" style="width: 150px; height: auto;">
                     </div>
                     <div class="card-title text-uppercase text-center py-3">
                         Sign Up
                     </div>
-                    <form method="POST" action="{{ route('register-user') }}">
+                    <form method="POST" action="{{ route('register-user') }}" id="registerForm">
                         @csrf
                         <div class="form-group">
                             <label for="exampleInputName" class="sr-only">Name</label>
@@ -110,7 +110,7 @@
                             <label for="exampleInputPassword" class="sr-only">Password</label>
                             <div class="position-relative has-icon-right">
                                 <input
-                                    type="text"
+                                    type="password"
                                     name="password"
                                     id="exampleInputPassword"
                                     class="form-control input-shadow"
@@ -148,7 +148,7 @@
                             <label for="exampleInputPassword" class="sr-only">Role</label>
                             <div class="position-relative has-icon-right">
                                 <select class="form-select form-select-lg" id="level" name="level" placeholder="Role" required>
-                                    <option selected>Select Role</option>
+                                    <option value="" selected disabled>Select Role</option>
                                     <option value="admin">Admin</option>
                                     <option value="bendahara">Bendahara</option>
                                     <option value="owner">Owner</option>
@@ -162,10 +162,9 @@
                             @endif
                         </div>
 
-
                         <div class="form-group">
                             <div class="icheck-material-white">
-                                <input type="checkbox" id="user-checkbox" checked="" />
+                                <input type="checkbox" id="user-checkbox" required />
                                 <label for="user-checkbox">I Agree With Terms & Conditions</label>
                             </div>
                         </div>
@@ -175,20 +174,6 @@
                             class="btn btn-light btn-block waves-effect waves-light">
                             Sign Up
                         </button>
-                        <!-- <div class="text-center mt-3">Sign Up With</div>
-
-                        <div class="form-row mt-4">
-                            <div class="form-group mb-0 col-6">
-                                <button type="button" class="btn btn-light btn-block">
-                                    <i class="fa fa-facebook-square"></i> Facebook
-                                </button>
-                            </div>
-                            <div class="form-group mb-0 col-6 text-right">
-                                <button type="button" class="btn btn-light btn-block">
-                                    <i class="fa fa-twitter-square"></i> Twitter
-                                </button>
-                            </div>
-                        </div> -->
                     </form>
                 </div>
             </div>
@@ -243,15 +228,79 @@
     <!--wrapper-->
 
     <!-- Bootstrap core JavaScript-->
-    <script src="be/js/jquery.min.js"></script>
-    <script src="be/js/popper.min.js"></script>
-    <script src="be/js/bootstrap.min.js"></script>
+    <script src="{{asset('be/js/jquery.min.js')}}"></script>
+    <script src="{{asset('be/js/popper.min.js')}}"></script>
+    <script src="{{asset('be/js/bootstrap.min.js')}}"></script>
 
     <!-- sidebar-menu js -->
-    <script src="be/js/sidebar-menu.js"></script>
+    <script src="{{asset('be/js/sidebar-menu.js')}}"></script>
 
     <!-- Custom scripts -->
-    <script src="be/js/app-script.js"></script>
+    <script src="{{asset('be/js/app-script.js')}}"></script>
+    
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#registerForm').on('submit', function(e) {
+                // Get all input values
+                const name = $('#exampleInputName').val().trim();
+                const email = $('#exampleInputEmailId').val().trim();
+                const no_hp = $('#exampleInputNoHP').val().trim();
+                const password = $('#exampleInputPassword').val().trim();
+                const alamat = $('#exampleInputAlamat').val().trim();
+                const level = $('#level').val();
+                const termsChecked = $('#user-checkbox').is(':checked');
+                
+                let errorMessage = '';
+                let emptyFields = [];
+                
+                // Check each field
+                if (!name) emptyFields.push('Nama');
+                if (!email) emptyFields.push('Email');
+                if (!no_hp) emptyFields.push('Nomor HP');
+                if (!password) emptyFields.push('Password');
+                if (!alamat) emptyFields.push('Alamat');
+                if (!level) emptyFields.push('Role');
+                if (!termsChecked) emptyFields.push('Persetujuan Syarat & Ketentuan');
+                
+                // Prepare error message
+                if (emptyFields.length > 0) {
+                    if (emptyFields.length === 1) {
+                        errorMessage = 'Field ' + emptyFields[0] + ' tidak boleh kosong!';
+                    } else if (emptyFields.length === 7) {
+                        errorMessage = 'Semua field tidak boleh kosong!';
+                    } else {
+                        errorMessage = 'Field berikut tidak boleh kosong: ' + emptyFields.join(', ');
+                    }
+                }
+                
+                // Show error if any
+                if (errorMessage) {
+                    e.preventDefault();
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Form Tidak Lengkap',
+                        text: errorMessage,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Mengerti'
+                    });
+                    
+                    // Focus on first empty field
+                    if (!name) $('#exampleInputName').focus();
+                    else if (!email) $('#exampleInputEmailId').focus();
+                    else if (!no_hp) $('#exampleInputNoHP').focus();
+                    else if (!password) $('#exampleInputPassword').focus();
+                    else if (!alamat) $('#exampleInputAlamat').focus();
+                    else if (!level) $('#level').focus();
+                    else if (!termsChecked) $('#user-checkbox').focus();
+                }
+                
+                // If all valid, form will submit normally
+            });
+        });
+    </script>
 </body>
-
 </html>

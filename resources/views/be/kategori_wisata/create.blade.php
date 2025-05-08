@@ -6,20 +6,40 @@
 @include('be.header') <!-- Ensure this file exists in resources\views\be\header.blade.php -->
 @endsection
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="clearfix"></div>
 <div class="content-wrapper">
     <div class="container-fluid"></div>
-    <div class="container">
-        <h1 class="mb-4">Tambah Kategori Wisata</h1>
-        <form action="{{ route('kategori-wisata.store') }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="nama_kategori">Nama Kategori</label>
-                <input type="text" name="nama_kategori" class="form-control" required>
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Tambah Kategori Wisata</h6>
             </div>
-            <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="{{ route('kategori-wisata.index') }}" class="btn btn-secondary">Batal</a> <!-- Add Batal button -->
-        </form>
+            <div class="card-body">
+                <form action="{{ route('kategori_wisata.store') }}" method="POST">
+                    @csrf
+
+                    <div class="form-group">
+                        <label for="kategori_wisata">Nama Kategori</label>
+                        <input type="text" class="form-control @error('kategori_wisata') is-invalid @enderror"
+                            id="kategori_wisata" name="kategori_wisata"
+                            value="{{ old('kategori_wisata') }}"
+                            placeholder="Contoh: Wisata Alam" required>
+                        @error('kategori_wisata')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
+                    <a href="{{ route('kategori_wisata.manage') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
+                </form>
+            </div>
+        </div>
     </div>
-</div>
-@endsection
+    @endsection

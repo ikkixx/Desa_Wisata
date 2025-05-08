@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Paket_WisataController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\CheckUserLevel;
@@ -44,7 +45,7 @@ Route::get('/dashboard', function () {
     if ($user->level === 'owner') {
         return redirect()->route('owner');
     }
-    
+
 
     return redirect()->back()->withErrors('Unauthorized access.');
 })->middleware('auth')->name('dashboard');
@@ -141,16 +142,15 @@ Route::middleware('auth')->group(function () {
 });
 
 // Paket Wisata Routes
-Route::resource('paket_wisata', App\Http\Controllers\Paket_WisataController::class)->names([
-    'index' => 'paket_wisata.manage',
-    'create' => 'paket_wisata.create',
-    'store' => 'paket_wisata.store',
-    'show' => 'paket_wisata.show',
-    'edit' => 'paket_wisata.edit',
-    'update' => 'paket_wisata.update',
+Route::resource('paket_wisata', Paket_WisataController::class)->names([
+    'index'   => 'paket_wisata.manage',  // Ganti 'index' menjadi 'manage'
+    'create'  => 'paket_wisata.create',
+    'store'   => 'paket_wisata.store',
+    'show'    => 'paket_wisata.show',
+    'edit'    => 'paket_wisata.edit',
+    'update'  => 'paket_wisata.update',
     'destroy' => 'paket_wisata.destroy',
 ]);
-
 // Karyawan Routes
 Route::resource('karyawan', App\Http\Controllers\KaryawanController::class)->names([
     'index' => 'karyawan.manage',

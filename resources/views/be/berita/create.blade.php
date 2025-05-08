@@ -1,59 +1,82 @@
 @extends('be.master')
+
 @section('sidebar')
 @include('be.sidebar')
 @endsection
 @section('header')
 @include('be.header')
+
 @endsection
 
 @section('content')
-
-<div class="clearfix"></div>
-
-<div class="content-wrapper">
-    <div class="container-fluid">
-
-        <div class="row mt-3">
-            <div class="col-lg-12">
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-md-12 grid-margin">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Tambah Berita</h4>
+                        <h4 class="card-title">Create News</h4>
+
                         <form action="{{ route('berita.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
+
                             <div class="form-group">
-                                <label for="judul">Judul</label>
-                                <input type="text" name="judul" id="judul" class="form-control" required>
+                                <label for="judul">Title</label>
+                                <input type="text" class="form-control" id="judul" name="judul"
+                                    value="{{ old('judul') }}" required>
+                                @error('judul')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="berita">Isi Berita</label>
-                                <textarea name="berita" id="berita" class="form-control" rows="5" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="fgl_post">Flag Post</label>
-                                <input type="text" name="fgl_post" id="fgl_post" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="id_kategori_berita">Kategori Berita</label>
-                                <select name="id_kategori_berita" id="id_kategori_berita" class="form-control" required>
-                                    <option value="">Pilih Kategori</option>
-                                    @foreach($kategori_berita as $kategori)
-                                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                <label for="id_kategori_berita">Category</label>
+                                <select class="form-control" id="id_kategori_berita" name="id_kategori_berita" required>
+                                    <option value="">Select Category</option>
+                                    @foreach($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        {{ old('id_kategori_berita') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->kategori_berita }}
+                                    </option>
                                     @endforeach
                                 </select>
+                                @error('id_kategori_berita')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="foto">Foto</label>
-                                <input type="file" name="foto" id="foto" class="form-control">
+                                <label for="tgl_post">Post Date</label>
+                                <input type="datetime-local" class="form-control" id="tgl_post" name="tgl_post"
+                                    value="{{ old('tgl_post') }}" required>
+                                @error('tgl_post')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
-                            <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="{{ route('berita.index') }}" class="btn btn-secondary">Batal</a>
+
+                            <div class="form-group">
+                                <label for="foto">Image</label>
+                                <input type="file" class="form-control" id="foto" name="foto" required>
+                                @error('foto')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="berita">Content</label>
+                                <textarea class="form-control" id="berita" name="berita" rows="10" required>{{ old('berita') }}</textarea>
+                                @error('berita')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <a href="{{ route('berita.manage') }}" class="btn btn-light">Cancel</a>
                         </form>
                     </div>
                 </div>
             </div>
-        </div><!--End Row-->
-
+        </div>
     </div>
 </div>
-
 @endsection
