@@ -58,14 +58,19 @@
             $user = \App\Models\User::find(session('loginId'));
             ?>
             <li class="nav-item">
-                <a
-                    class="nav-link dropdown-toggle dropdown-toggle-nocaret"
-                    data-toggle="dropdown"
-                    href="#">
-                    <span class="user-profile"><img
-                            src="https://via.placeholder.com/110x110"
-                            class="img-circle"
-                            alt="user avatar" /></span>
+                @php
+                $photo = null;
+                if ($user->level == 'pelanggan' && $user->pelanggan && $user->pelanggan->foto) {
+                $photo = asset('storage/' . $user->pelanggan->foto);
+                } elseif ($user->karyawan && $user->karyawan->foto) {
+                $photo = asset('storage/' . $user->karyawan->foto);
+                } else {
+                $photo = asset('images/default-user.png');
+                }
+                @endphp
+
+                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
+                    <img src="{{ $photo }}" alt="Profile" class="rounded-circle border" width="40" height="40">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li class="dropdown-item user-details">
@@ -74,7 +79,7 @@
                                 <div class="avatar">
                                     <img
                                         class="align-self-start mr-3"
-                                        src="https://via.placeholder.com/110x110"
+                                        src="{{ $photo }}"
                                         alt="user avatar" />
                                 </div>
                                 <div class="media-body">

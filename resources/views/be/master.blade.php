@@ -118,6 +118,7 @@
             </ul>
         </div> -->
         <!--End sidebar-wrapper-->
+        @yield("header")
         @yield ("sidebar")
 
         <!--Start topbar header-->
@@ -224,7 +225,7 @@
             </nav>
         </header> -->
         <!--End topbar header-->
-        @yield("header")
+
 
         <!-- <div class="clearfix"></div>
 

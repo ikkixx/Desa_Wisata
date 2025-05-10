@@ -12,11 +12,12 @@ class Karyawan extends Model
     protected $table = 'karyawans';
 
     protected $fillable = [
-        'id_user',
         'nama_karyawan',
-        'no_hp',
         'alamat',
+        'no_hp',
         'jabatan',
+        'foto',
+        'id_user'
     ];
 
     public function user()

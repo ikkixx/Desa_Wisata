@@ -19,7 +19,7 @@ class Reservasi extends Model
         'harga',
         'jumlah_peserta',
         'diskon',
-        'nilai_diskon', 
+        'nilai_diskon',
         'total_bayar',
         'file_bukti_tf',
         'status_reservasi'

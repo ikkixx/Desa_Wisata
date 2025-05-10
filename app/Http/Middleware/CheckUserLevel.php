@@ -25,7 +25,7 @@ class CheckUserLevel
                     case 'owner':
                         return redirect('/owner');
                     case 'pelanggan':
-                        return redirect('/pelanggan');
+                        return redirect('/home');
                 }
             }
         }

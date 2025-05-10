@@ -16,7 +16,6 @@ class Pelanggan extends Model
         'nama_lengkap',
         'no_hp',
         'alamat',
-        'password',
         'foto',
         'id_user'
     ];

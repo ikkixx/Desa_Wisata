@@ -67,7 +67,7 @@ Route::get('/profilepelanggan', [App\Http\Controllers\PelangganController::class
 
 Route::middleware('auth')->group(function () {
     // Users Routes
-    Route::resource('user_manage', App\Http\Controllers\UsersController::class)->names([
+    Route::resource('user-manage', App\Http\Controllers\UsersController::class)->middleware(['auth', CheckUserLevel::class . ':admin'])->names([
         'index' => 'user.manage',
         'create' => 'user.create',
         'edit' => 'user.edit',
