@@ -22,12 +22,23 @@ class Kategori_WisataController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kategori_wisata' => 'required|string|max:255|unique:kategori_wisatas'
+            'kategori_wisata' => 'required|unique:kategori_wisatas,kategori_wisata|max:255',
+            'deskripsi' => 'required',
+            'foto' => 'nullable|image|max:2048',
         ]);
 
         try {
+            $fotoPath = null;
+
+            if ($request->hasFile('foto')) {
+                $fotoPath = $request->file('foto')->store('kategori_wisata', 'public');
+            }
+
             KategoriWisata::create([
-                'kategori_wisata' => $request->kategori_wisata
+                'kategori_wisata' => $request->kategori_wisata,
+                'deskripsi' => $request->deskripsi,
+                'foto' => $fotoPath,
+                'aktif' => true, // optional jika Anda pakai kolom ini
             ]);
 
             return redirect()->route('kategori_wisata.manage')
@@ -53,7 +64,9 @@ class Kategori_WisataController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'kategori_wisata' => 'required|string|max:255|unique:kategori_wisatas,kategori_wisata,' . $id
+            'kategori_wisata' => 'required|unique:kategori_wisatas,kategori_wisata|max:255',
+            'deskripsi' => 'required',
+            'foto' => 'nullable|image|max:2048',
         ]);
 
         try {

@@ -11,14 +11,17 @@
     <div class="container-fluid"></div>
     <div class="container">
         <h1 class="mb-4">Manajemen Kategori Wisata</h1>
+
+        <!-- SweetAlert Success Message -->
         @if(session('success'))
-        <div class="alert alert-success">
+        <div class="alert alert-success d-none" id="success-alert">
             {{ session('success') }}
         </div>
         @endif
 
+        <!-- SweetAlert Error Message -->
         @if(session('error'))
-        <div class="alert alert-danger">
+        <div class="alert alert-danger d-none" id="error-alert">
             {{ session('error') }}
         </div>
         @endif
@@ -31,18 +34,26 @@
                 <tr>
                     <th>ID</th>
                     <th>Nama Kategori</th>
+                    <th>Foto</th>
+                    <th>Deskripsi</th>
+                    <th>Aksi</th>
                     <th>Dibuat Pada</th>
                     <th>Diperbarui Pada</th>
-                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($kategoriWisata as $kategori)
                 <tr>
                     <td>{{ $kategori->id }}</td>
-                    <td>{{ $kategori->nama_kategori }}</td>
-                    <td>{{ $kategori->created_at->format('d-m-Y H:i') }}</td>
-                    <td>{{ $kategori->updated_at->format('d-m-Y H:i') }}</td>
+                    <td>{{ $kategori->kategori_wisata }}</td>
+                    <td>
+                        @if($kategori->foto)
+                        <img src="{{ asset('storage/' . $kategori->foto) }}" alt="Foto Kategori" width="100">
+                        @else
+                        Tidak ada foto
+                        @endif
+                    </td>
+                    <td>{{ $kategori->deskripsi }}</td>
                     <td>
                         @if(auth()->user()->level !== 'owner')
                         <a href="{{ route('kategori_wisata.edit', $kategori->id) }}" class="btn btn-warning btn-sm">Edit</a>
@@ -53,6 +64,9 @@
                         </form>
                         @endif
                     </td>
+                    <td>{{ $kategori->created_at->format('d-m-Y H:i') }}</td>
+                    <td>{{ $kategori->updated_at->format('d-m-Y H:i') }}</td>
+
                 </tr>
                 @endforeach
                 @if(session('alert'))

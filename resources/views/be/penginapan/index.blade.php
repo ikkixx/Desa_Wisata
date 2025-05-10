@@ -1,76 +1,84 @@
 @extends('be.master')
-@section('sidebar') @include('be.sidebar') @endsection
-@section('header') @include('be.header') @endsection
+@section('header')
+@include('be.header')
+@endsection
+@section('sidebar')
+@include('be.sidebar')
+@endsection
 
 @section('content')
-<div class="content-wrapper">
-    <div class="container">
-        <h1>Edit Penginapan</h1>
-        <form action="{{ route('penginapan.update', $penginapan->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
+<div class="main-panel">
+    <div class="content-wrapper">
 
-            <div class="form-group">
-                <label>Nama Penginapan</label>
-                <input type="text" name="nama_penginapan"
-                    class="form-control @error('nama_penginapan') is-invalid @enderror"
-                    value="{{ old('nama_penginapan', $penginapan->nama_penginapan) }}" required>
-                @error('nama_penginapan')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Berita Management</h4>
+                        
+                        <a href="{{ route('berita.create') }}" class="btn btn-primary mb-3">
+                            <i class="fa fa-plus-circle me-2"></i>Add Berita
+                        </a>
 
-            <div class="form-group">
-                <label>Deskripsi</label>
-                <textarea name="deskripsi" rows="4"
-                    class="form-control @error('deskripsi') is-invalid @enderror"
-                    required>{{ old('deskripsi', $penginapan->deskripsi) }}</textarea>
-                @error('deskripsi')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label>Fasilitas</label>
-                <textarea name="fasilitas" rows="3"
-                    class="form-control @error('fasilitas') is-invalid @enderror"
-                    required>{{ old('fasilitas', $penginapan->fasilitas) }}</textarea>
-                @error('fasilitas')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label>Foto Penginapan</label>
-                <div class="row">
-                    @for($i = 1; $i <= 5; $i++)
-                        <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                @if($penginapan["foto{$i}"])
-                                <img src="{{ asset('storage/'.$penginapan["foto{$i}"]) }}"
-                                    class="img-fluid mb-2"
-                                    style="height: 150px; object-fit: cover;">
-                                @endif
-
-                                <input type="file" name="foto{{ $i }}" class="form-control mt-2">
-
-                                @if($penginapan["foto{$i}"])
-                                <div class="form-check mt-2">
-                                    <input type="checkbox" name="hapus_foto{{ $i }}" id="hapus_foto{{ $i }}" class="form-check-input">
-                                    <label for="hapus_foto{{ $i }}" class="form-check-label text-danger">Hapus Foto Ini</label>
-                                </div>
-                                @endif
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Judul</th>
+                                        <th>Kategori</th>
+                                        <th>Penulis</th>
+                                        <th>Tanggal</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($beritas as $index => $berita)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ Str::limit($berita->judul, 30) }}</td>
+                                        <td>{{ $berita->kategori }}</td>
+                                        <td>{{ $berita->penulis }}</td>
+                                        <td>{{ $berita->tanggal_publikasi->format('d M Y') }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                @if($berita->status == 'published') badge-success 
+                                                @elseif($berita->status == 'draft') badge-warning 
+                                                @else badge-secondary @endif">
+                                                {{ ucfirst($berita->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('berita.show', $berita->id) }}" class="btn btn-info btn-sm">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('berita.edit', $berita->id) }}" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('berita.destroy', $berita->id) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                </div>
-                @endfor
-            </div>
-    </div>
 
-    <button type="submit" class="btn btn-primary">Update</button>
-    <a href="{{ route('penginapan.index') }}" class="btn btn-secondary">Kembali</a>
-    </form>
-</div>
+                        <div class="mt-3">
+                            {{ $beritas->links() }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

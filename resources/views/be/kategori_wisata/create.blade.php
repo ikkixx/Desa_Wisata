@@ -1,45 +1,140 @@
-@extends('be.master') <!-- Ensure this file exists in resources\views\be\master.blade.php -->
+@extends('be.master')
 @section('sidebar')
-@include('be.sidebar') <!-- Ensure this file exists in resources\views\be\sidebar.blade.php -->
+@include('be.sidebar')
 @endsection
 @section('header')
-@include('be.header') <!-- Ensure this file exists in resources\views\be\header.blade.php -->
+@include('be.header')
 @endsection
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="clearfix"></div>
 <div class="content-wrapper">
-    <div class="container-fluid"></div>
     <div class="container-fluid">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Tambah Kategori Wisata</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Tambah Kategori Wisata Baru</h6>
             </div>
             <div class="card-body">
-                <form action="{{ route('kategori_wisata.store') }}" method="POST">
+                <form action="{{ route('kategori_wisata.store') }}" method="POST" enctype="multipart/form-data" id="kategoriForm">
                     @csrf
 
-                    <div class="form-group">
-                        <label for="kategori_wisata">Nama Kategori</label>
-                        <input type="text" class="form-control @error('kategori_wisata') is-invalid @enderror"
-                            id="kategori_wisata" name="kategori_wisata"
-                            value="{{ old('kategori_wisata') }}"
-                            placeholder="Contoh: Wisata Alam" required>
-                        @error('kategori_wisata')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                    <div class="form-group row">
+                        <label for="kategori_wisata" class="col-sm-2 col-form-label">Nama Kategori <span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control @error('kategori_wisata') is-invalid @enderror"
+                                id="kategori_wisata" name="kategori_wisata"
+                                value="{{ old('kategori_wisata') }}"
+                                placeholder="Masukkan nama kategori (contoh: Wisata Alam)" required>
+                            @error('kategori_wisata')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                            <small class="form-text text-muted">Nama kategori harus unik dan tidak boleh duplikat</small>
                         </div>
-                        @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Simpan
-                    </button>
-                    <a href="{{ route('kategori_wisata.manage') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Kembali
-                    </a>
+                    <div class="form-group row">
+                        <label for="foto" class="col-sm-2 col-form-label">Foto Kategori</label>
+                        <div class="col-sm-10">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input @error('foto') is-invalid @enderror"
+                                    id="foto" name="foto" accept="image/*">
+                                <label class="custom-file-label" for="foto">Pilih file gambar</label>
+                                @error('foto')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <small class="form-text text-muted">
+                                Format: JPEG, PNG, JPG (Maksimal 2MB). Kosongkan jika tidak ingin menambahkan foto.
+                            </small>
+                            <div class="mt-2" id="imagePreviewContainer" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Preview Gambar" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="deskripsi" class="col-sm-2 col-form-label">Deskripsi <span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control @error('deskripsi') is-invalid @enderror"
+                                id="deskripsi" name="deskripsi" rows="5"
+                                placeholder="Masukkan deskripsi lengkap tentang kategori wisata ini" required>{{ old('deskripsi') }}</textarea>
+                            @error('deskripsi')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-10 offset-sm-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Simpan Kategori
+                            </button>
+                            <a href="{{ route('kategori_wisata.manage') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Kembali ke Daftar
+                            </a>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-    @endsection
+</div>
+
+<script>
+    // Preview image before upload
+    document.getElementById('foto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreviewContainer').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+            document.querySelector('.custom-file-label').textContent = file.name;
+        } else {
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+            document.querySelector('.custom-file-label').textContent = 'Pilih file gambar';
+        }
+    });
+
+    // Form validation and sweetalert
+    document.getElementById('kategoriForm').addEventListener('submit', function(e) {
+        const kategoriName = document.getElementById('kategori_wisata').value.trim();
+        const deskripsi = document.getElementById('deskripsi').value.trim();
+
+        if (!kategoriName || !deskripsi) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Harap lengkapi semua field yang wajib diisi!',
+            });
+        }
+    });
+</script>
+
+<style>
+    .custom-file-label::after {
+        content: "Browse";
+    }
+
+    .is-invalid~.invalid-feedback {
+        display: block;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>
+@endsection

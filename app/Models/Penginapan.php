@@ -22,8 +22,6 @@ class Penginapan extends Model
         'foto3',
         'foto4',
         'foto5',
-        'created_at', // Jika ingin diisi manual
-        'updated_at'  // Jika ingin diisi manual
     ];
 
     // Jika menggunakan timestamp otomatis (sesuai database)

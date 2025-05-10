@@ -10,18 +10,15 @@ class KategoriWisata extends Model
     use HasFactory;
 
     protected $table = 'kategori_wisatas';
+    
+    protected $fillable = [
+        'kategori_wisata',
+        'foto',
+        'deskripsi'
+    ];
 
-    // Sesuaikan dengan nama kolom di database
-    protected $fillable = ['kategori_wisata'];
-    
-    // Opsional: Jika ingin menggunakan nama berbeda di aplikasi
-    public function getNamaKategoriAttribute()
+    public function obyekWisata()
     {
-        return $this->attributes['kategori_wisata'];
-    }
-    
-    public function setNamaKategoriAttribute($value)
-    {
-        $this->attributes['kategori_wisata'] = $value;
+        return $this->hasMany(ObyekWisata::class, 'id_kategori_wisata');
     }
 }

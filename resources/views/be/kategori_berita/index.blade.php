@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="card-title">Daftar Kategori</h6>
+                <h2  class="mb-4">Daftar Kategori Wisata</h2>
             </div>
 
             <!-- SweetAlert Messages -->

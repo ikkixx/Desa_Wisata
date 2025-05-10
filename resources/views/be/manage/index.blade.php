@@ -9,20 +9,16 @@
 @section('content')
 <div class="main-panel">
     <div class="content-wrapper">
-        <div class="d-flex justify-content-end mb-3">
-            <a href="{{ route('user.create') }}" class="btn btn-primary">
-                <i class="fa fa-plus-circle me-2"></i>Add User
-            </a>
-        </div>
 
         <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Users Management</h4>
-                        <p class="card-description">
-                            User Table <code>Add | Edit | Remove</code>
-                        </p>
+                        <h2  class="mb-4">User Manajemen</h2>
+                        
+                        <a href="{{ route('user.create') }}" class="btn btn-primary mb-3">
+                            <i class="fa fa-plus-circle me-2"></i>Add User
+                        </a>
 
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -83,15 +79,13 @@
 
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('user.edit', $data->id) }}" class="btn btn-dark btn-sm">
+                                                <button type="button" class="btn btn-warning btn-sm" onClick="window.location.href='{{ route('berita.edit', $data->id) }}'">
                                                     <i class="fa fa-pencil-square-o"></i> Edit
-                                                </a>
-                                                <form action="{{ route('user.destroy', $data->id) }}" method="POST" id="deleteForm{{ $data->id }}" style="display: inline;">
+                                                </button>
+                                                <form action="{{ route('berita.destroy', $data->id) }}" method="POST" style="display:inline;" class="delete-form">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="btn btn-danger btn-fw" onclick="deleteConfirm({{ $data->id }})">
-                                                        <i class="fas fa-trash-alt me-1"></i>Delete
-                                                    </button>
+                                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                                 </form>
                                             </div>
                                         </td>
