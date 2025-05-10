@@ -7,19 +7,18 @@ use App\Models\Pelanggan;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class UsersController extends Controller
 {
     public function index()
     {
-        $users = User::with(['pelanggan', 'karyawan'])->get();
+        $users = User::with(['pelanggan', 'karyawan'])->latest()->paginate(10);
         $greeting = $this->getGreeting();
 
         return view('be.manage.index', [
-            'title' => 'User Management',
             'users' => $users,
-            'greeting' => $greeting,
+            'greeting' => $greeting
         ]);
     }
 
@@ -27,8 +26,9 @@ class UsersController extends Controller
     {
         $greeting = $this->getGreeting();
         return view('be.manage.create', [
-            'title' => 'User Management Create',
             'greeting' => $greeting,
+            'levels' => ['admin', 'bendahara', 'owner', 'pelanggan'],
+            'jabatans' => ['administrasi', 'bendahara', 'pemilik']
         ]);
     }
 
@@ -36,76 +36,67 @@ class UsersController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'no_hp' => 'required|string|max:15|unique:users,no_hp',
-            'password' => 'required|min:6|confirmed',
-            'level' => 'required|in:admin,bendahara,owner,pelanggan,karyawan',
-            'jabatan' => 'required_if:level,karyawan|nullable|string|in:administrasi,bendahara,pemilik',
-            'alamat' => 'nullable|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+            'no_hp' => 'required|string|max:15',
+            'alamat' => 'required|string',
+            'level' => 'required|in:admin,bendahara,owner,pelanggan',
+            'aktif' => 'required|boolean',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'jabatan' => 'required_if:level,admin,bendahara,owner',
+            'nama_lengkap' => 'required_if:level,pelanggan'
         ]);
 
-        $originalLevel = $request->level;
-        $finalLevel = $originalLevel;
-
-        // Jika karyawan, mapping jabatan ke level enum user
-        if ($originalLevel === 'karyawan') {
-            $mapping = [
-                'administrasi' => 'admin',
-                'bendahara' => 'bendahara',
-                'pemilik' => 'owner',
-            ];
-
-            if (!isset($mapping[$request->jabatan])) {
-                return back()->withErrors(['jabatan' => 'Jabatan tidak valid untuk karyawan']);
-            }
-
-            $finalLevel = $mapping[$request->jabatan];
-        }
-
-        // Buat user dengan level hasil mapping
+        // Create User
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'password' => Hash::make($request->password),
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
-            'password' => Hash::make($request->password),
-            'level' => $finalLevel,
+            'level' => $request->level,
+            'aktif' => $request->aktif
         ]);
 
-        // Buat entri pelanggan jika level asli adalah pelanggan
-        if ($originalLevel === 'pelanggan') {
-            Pelanggan::create([
-                'id_user' => $user->id,
-                'nama_lengkap' => $request->name,
-                'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat ?? '',
-            ]);
+        // Handle foto upload
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('profile-photos', 'public');
         }
 
-        // Buat entri karyawan jika level asli adalah karyawan
-        if ($originalLevel === 'karyawan') {
-            Karyawan::create([
-                'id_user' => $user->id,
-                'nama_karyawan' => $request->name,
+        // Create related record based on level
+        if ($request->level === 'pelanggan') {
+            Pelanggan::create([
+                'nama_lengkap' => $request->nama_lengkap,
                 'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat ?? '',
+                'alamat' => $request->alamat,
+                'foto' => $fotoPath,
+                'id_user' => $user->id
+            ]);
+        } else {
+            Karyawan::create([
+                'nama_karyawan' => $request->name,
+                'alamat' => $request->alamat,
+                'no_hp' => $request->no_hp,
                 'jabatan' => $request->jabatan,
+                'foto' => $fotoPath,
+                'id_user' => $user->id
             ]);
         }
 
         return redirect()->route('user.manage')->with('success', 'User created successfully.');
     }
 
-
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with(['pelanggan', 'karyawan'])->findOrFail($id);
         $greeting = $this->getGreeting();
 
         return view('be.manage.edit', [
-            'title' => 'User Management Edit',
             'user' => $user,
             'greeting' => $greeting,
+            'levels' => ['admin', 'bendahara', 'owner', 'pelanggan'],
+            'jabatans' => ['administrasi', 'bendahara', 'pemilik']
         ]);
     }
 
@@ -116,29 +107,105 @@ class UsersController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'no_hp' => 'required|string|max:15|unique:users,no_hp,' . $user->id,
-            'level' => 'required|in:admin,bendahara,owner,pelanggan,karyawan',
-            'alamat' => 'nullable|string',
-            'jabatan' => 'required_if:level,admin,bendahara,owner,karyawan|nullable|string|in:administrasi,bendahara,pemilik,staff,kasir',
+            'no_hp' => 'required|string|max:15',
+            'alamat' => 'required|string',
+            'level' => 'required|in:admin,bendahara,owner,pelanggan',
+            'aktif' => 'required|boolean',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'jabatan' => 'required_if:level,admin,bendahara,owner',
+            'nama_lengkap' => 'required_if:level,pelanggan'
         ]);
 
-        $data = [
+        // Update User
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'no_hp' => $request->no_hp,
-            'level' => $request->level,
             'alamat' => $request->alamat,
+            'level' => $request->level,
+            'aktif' => $request->aktif
         ];
 
-        $user->update($data);
+        if ($request->password) {
+            $userData['password'] = Hash::make($request->password);
+        }
+
+        $user->update($userData);
+
+        // Handle foto upload
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            // Delete old photo if exists
+            if ($user->level === 'pelanggan' && $user->pelanggan && $user->pelanggan->foto) {
+                Storage::disk('public')->delete($user->pelanggan->foto);
+            } elseif ($user->karyawan && $user->karyawan->foto) {
+                Storage::disk('public')->delete($user->karyawan->foto);
+            }
+
+            $fotoPath = $request->file('foto')->store('profile-photos', 'public');
+        }
+
+        // Update related record based on level
+        if ($request->level === 'pelanggan') {
+            $pelangganData = [
+                'nama_lengkap' => $request->nama_lengkap,
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat,
+                'id_user' => $user->id
+            ];
+
+            if ($fotoPath) {
+                $pelangganData['foto'] = $fotoPath;
+            }
+
+            if ($user->pelanggan) {
+                $user->pelanggan->update($pelangganData);
+            } else {
+                // Delete karyawan record if exists
+                if ($user->karyawan) {
+                    $user->karyawan->delete();
+                }
+                Pelanggan::create($pelangganData);
+            }
+        } else {
+            $karyawanData = [
+                'nama_karyawan' => $request->name,
+                'alamat' => $request->alamat,
+                'no_hp' => $request->no_hp,
+                'jabatan' => $request->jabatan,
+                'id_user' => $user->id
+            ];
+
+            if ($fotoPath) {
+                $karyawanData['foto'] = $fotoPath;
+            }
+
+            if ($user->karyawan) {
+                $user->karyawan->update($karyawanData);
+            } else {
+                // Delete pelanggan record if exists
+                if ($user->pelanggan) {
+                    $user->pelanggan->delete();
+                }
+                Karyawan::create($karyawanData);
+            }
+        }
 
         return redirect()->route('user.manage')->with('success', 'User updated successfully.');
     }
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with(['pelanggan', 'karyawan'])->findOrFail($id);
 
+        // Delete related photo files
+        if ($user->pelanggan && $user->pelanggan->foto) {
+            Storage::disk('public')->delete($user->pelanggan->foto);
+        } elseif ($user->karyawan && $user->karyawan->foto) {
+            Storage::disk('public')->delete($user->karyawan->foto);
+        }
+
+        // Delete related records
         if ($user->pelanggan) {
             $user->pelanggan->delete();
         }
@@ -146,6 +213,7 @@ class UsersController extends Controller
             $user->karyawan->delete();
         }
 
+        // Delete user
         $user->delete();
 
         return redirect()->route('user.manage')->with('success', 'User deleted successfully.');
@@ -153,13 +221,14 @@ class UsersController extends Controller
 
     private function getGreeting()
     {
-        $now = Carbon::now();
-        if ($now->hour >= 5 && $now->hour < 12) {
+        $hour = now()->hour;
+
+        if ($hour < 12) {
             return 'Good Morning';
-        } elseif ($now->hour >= 12 && $now->hour < 18) {
-            return 'Good Evening';
+        } elseif ($hour < 18) {
+            return 'Good Afternoon';
         } else {
-            return 'Good Night';
+            return 'Good Evening';
         }
     }
 }
