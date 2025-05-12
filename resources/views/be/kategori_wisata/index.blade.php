@@ -18,7 +18,7 @@
             {{ session('success') }}
         </div>
         @endif
-
+        
         <!-- SweetAlert Error Message -->
         @if(session('error'))
         <div class="alert alert-danger d-none" id="error-alert">
@@ -36,9 +36,9 @@
                     <th>Nama Kategori</th>
                     <th>Foto</th>
                     <th>Deskripsi</th>
-                    <th>Aksi</th>
                     <th>Dibuat Pada</th>
                     <th>Diperbarui Pada</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,19 +54,18 @@
                         @endif
                     </td>
                     <td>{{ $kategori->deskripsi }}</td>
+                    <td>{{ $kategori->created_at->format('d-m-Y H:i') }}</td>
+                    <td>{{ $kategori->updated_at->format('d-m-Y H:i') }}</td>
                     <td>
-                        @if(auth()->user()->level !== 'owner')
+                        @if(auth()->check() && auth()->user()->level !== 'owner')
                         <a href="{{ route('kategori_wisata.edit', $kategori->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('kategori_wisata.destroy', $kategori->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('kategori_wisata.destroy', $kategori->id) }}" method="POST" style="display:inline;" class="delete-form">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                         </form>
                         @endif
                     </td>
-                    <td>{{ $kategori->created_at->format('d-m-Y H:i') }}</td>
-                    <td>{{ $kategori->updated_at->format('d-m-Y H:i') }}</td>
-
                 </tr>
                 @endforeach
                 @if(session('alert'))
@@ -81,20 +80,55 @@
         </table>
     </div>
 </div>
-@endsection
 
-@section('scripts')
-<!-- Script untuk auto-hide notifikasi -->
+<!-- SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).ready(function() {
-        // Auto-hide alert setelah 5 detik
-        setTimeout(function() {
-            $('.alert').alert('close');
-        }, 5000);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Success message
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: successAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
 
-        // Pastikan form tidak di-submit berkali-kali
-        $('form').submit(function() {
-            $(this).find('button[type="submit"]').prop('disabled', true);
+        // Error message
+        const errorAlert = document.getElementById('error-alert');
+        if (errorAlert) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: errorAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        // Delete confirmation
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
         });
     });
 </script>

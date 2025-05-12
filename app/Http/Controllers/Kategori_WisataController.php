@@ -42,16 +42,11 @@ class Kategori_WisataController extends Controller
             ]);
 
             return redirect()->route('kategori_wisata.manage')
-                ->with('alert', [
-                    'type' => 'success',
-                    'message' => 'Kategori berhasil ditambahkan!'
-                ]);
+                ->with('success', 'Kategori Wisata berhasil ditambahkan!');
         } catch (\Exception $e) {
-            return back()->withInput()
-                ->with('alert', [
-                    'type' => 'error',
-                    'message' => 'Gagal menambahkan kategori: ' . $e->getMessage()
-                ]);
+            return redirect()->back()
+                ->with('error', 'Gagal menambahkan Kategori Wisata: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -89,9 +84,10 @@ class Kategori_WisataController extends Controller
             $kategori->delete();
 
             return redirect()->route('kategori_wisata.manage')
-                ->with('success', 'Kategori wisata berhasil dihapus!');
+                ->with('success', 'Kategori Wisata berhasil dihapus!');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus kategori: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Gagal menghapus kategori Wisata: '.$e->getMessage());
         }
     }
 }

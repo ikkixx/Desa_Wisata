@@ -9,13 +9,6 @@
 @section('content')
 <div class="main-panel">
     <div class="content-wrapper">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <!-- <h4 class="card-title">{{ $greeting }}, here's your Users Management</h4> -->
-            <a href="{{ route('user.create') }}" class="btn btn-primary">
-                <i class="fa fa-plus-circle me-2"></i>Add User
-            </a>
-        </div>
-
         <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
@@ -25,8 +18,22 @@
                             User Table <code>Add | Edit | Remove</code>
                         </p> -->
 
+                        <!-- SweetAlert Success Message -->
                         @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
+                        <div class="alert alert-success d-none" id="success-alert">
+                            {{ session('success') }}
+                        </div>
+                        @endif
+
+                        <!-- SweetAlert Error Message -->
+                        @if(session('error'))
+                        <div class="alert alert-danger d-none" id="error-alert">
+                            {{ session('error') }}
+                        </div>
+                        @endif
+
+                        @if(auth()->user()->level !== 'owner')
+                        <a href="{{ route('user.create') }}" class="btn btn-primary mb-3">Tambah User</a> <!-- Add button -->
                         @endif
 
                         <div class="table-responsive">
@@ -94,7 +101,7 @@
                                             $jabatan = \App\Models\Karyawan::where('id_user', $data->id)->first()?->jabatan;
                                             @endphp
                                             @if ($jabatan)
-                                            <br><small class="text-muted">({{ ucfirst($jabatan) }})</small>
+                                            <br><small class="text-success">({{ ucfirst($jabatan) }})</small>
                                             @endif
                                             @endif
                                         </td>
@@ -170,31 +177,56 @@
     </div>
 </div>
 
+<!-- SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function showImgPreview(src) {
-        const previewImg = document.getElementById('imgPreview');
-        previewImg.src = src;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Success message
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: successAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
 
-        // Initialize and show modal
-        const modal = new bootstrap.Modal(document.getElementById('imgPreviewModal'));
-        modal.show();
-    }
+        // Error message
+        const errorAlert = document.getElementById('error-alert');
+        if (errorAlert) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: errorAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
 
-    function deleteConfirm(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('deleteForm' + id).submit();
-            }
+        // Delete confirmation
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
         });
-    }
+    });
 </script>
 
 @endsection

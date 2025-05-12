@@ -43,7 +43,7 @@
             </a>
         </li> -->
         <li>
-            <a href="{{ route('kategori_berita.manage') }}">
+            <a href="{{ Route('kategori_berita.manage') }}">
                 <i class="zmdi zmdi-map"></i> <span>Kategori Berita</span>
             </a>
             @elseif (Auth::check() && str_contains(Auth::user()->level, 'bendahara'))

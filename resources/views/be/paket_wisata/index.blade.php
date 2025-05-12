@@ -52,7 +52,11 @@
                     <td>{{ $paket->fasilitas }}</td>
                     <td>{{ number_format($paket->harga_per_pack, 0, ',', '.') }}</td>
                     <td>
-                        <img src="{{ asset('storage/' . $paket->foto1) }}" alt="Foto 1" width="50">
+                        @if($paket->foto)
+                        <img src="{{ asset('storage/' . $paket->foto) }}" alt="Foto Kategori" width="100">
+                        @else
+                        Tidak ada foto
+                        @endif
                     </td>
                     <td>
                         @if(auth()->check() && auth()->user()->level !== 'owner')

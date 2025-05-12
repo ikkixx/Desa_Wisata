@@ -7,23 +7,28 @@
 @section('content')
 <div class="main-panel">
     <div class="content-wrapper">
-        <div class="d-flex justify-content-end mb-3">
-            <a href="{{ route('reservasi.create') }}" class="btn btn-primary">
-                <i class="fa fa-plus-circle me-2"></i>Tambah Reservasi
-            </a>
-        </div>
 
         <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Manajemen Reservasi</h4>
-                        <p class="card-description">
-                            Tabel Reservasi <code>Tambah | Edit | Hapus</code>
-                        </p>
+                        @if(auth()->user()->level !== 'owner')
+                        <a href="{{ route('reservasi.create') }}" class="btn btn-primary mb-3">Tambah Reservasi</a> <!-- Add button -->
+                        @endif
 
+                        <!-- SweetAlert Success Message -->
                         @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
+                        <div class="alert alert-success d-none" id="success-alert">
+                            {{ session('success') }}
+                        </div>
+                        @endif
+
+                        <!-- SweetAlert Error Message -->
+                        @if(session('error'))
+                        <div class="alert alert-danger d-none" id="error-alert">
+                            {{ session('error') }}
+                        </div>
                         @endif
 
                         <div class="table-responsive">
@@ -110,4 +115,57 @@
         </div> <!-- row -->
     </div> <!-- content-wrapper -->
 </div> <!-- main-panel -->
+
+
+<!-- SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Success message
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: successAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        // Error message
+        const errorAlert = document.getElementById('error-alert');
+        if (errorAlert) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: errorAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        // Delete confirmation
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 @endsection

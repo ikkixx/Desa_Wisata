@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ReservasiController extends Controller
 {
@@ -178,8 +179,16 @@ class ReservasiController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $reservasi->delete();
-        return redirect()->route('reservasi.manage')->with('success', 'Reservasi deleted successfully.');
+        try {
+            // Delete the reservation
+            $reservasi->delete();
+
+            return redirect()->route('reservasimanage')
+                ->with('success', 'Reservasi berhasil dihapus!');
+        } catch (\Exception $e) {
+            return redirect()->route('reservasimanage')
+                ->with('error', 'Gagal menghapus reservasi: ' . $e->getMessage());
+        }
     }
 
     // API untuk mendapatkan data reservasi pending (digunakan di navbar)
