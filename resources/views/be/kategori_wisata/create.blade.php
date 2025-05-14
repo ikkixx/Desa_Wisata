@@ -5,8 +5,8 @@
 @section('header')
 @include('be.header')
 @endsection
+
 @section('content')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="clearfix"></div>
 <div class="content-wrapper">
     <div class="container-fluid">
@@ -30,7 +30,6 @@
                                 {{ $message }}
                             </div>
                             @enderror
-                            <small class="form-text text-muted">Nama kategori harus unik dan tidak boleh duplikat</small>
                         </div>
                     </div>
 
@@ -104,7 +103,7 @@
         }
     });
 
-    // Form validation and sweetalert
+    // Form validation
     document.getElementById('kategoriForm').addEventListener('submit', function(e) {
         const kategoriName = document.getElementById('kategori_wisata').value.trim();
         const deskripsi = document.getElementById('deskripsi').value.trim();

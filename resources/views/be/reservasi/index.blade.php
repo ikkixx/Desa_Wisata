@@ -1,121 +1,98 @@
 @extends('be.master')
-
 @section('sidebar')
 @include('be.sidebar')
 @endsection
+@section('header')
+@include('be.header')
+@endsection
 
 @section('content')
-<div class="main-panel">
-    <div class="content-wrapper">
+<div class="clearfix"></div>
+<div class="content-wrapper">
+    <div class="container-fluid"></div>
+    <div class="container">
+        <h1 class="mb-4">Manajemen Reservasi</h1>
 
-        <div class="row">
-            <div class="col-lg-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Manajemen Reservasi</h4>
-                        @if(auth()->user()->level !== 'owner')
-                        <a href="{{ route('reservasi.create') }}" class="btn btn-primary mb-3">Tambah Reservasi</a> <!-- Add button -->
-                        @endif
+        @if(auth()->user()->level !== 'owner')
+        <a href="{{ route('reservasi.create') }}" class="btn btn-primary mb-3">Tambah Reservasi</a>
+        @endif
 
-                        <!-- SweetAlert Success Message -->
-                        @if(session('success'))
-                        <div class="alert alert-success d-none" id="success-alert">
-                            {{ session('success') }}
+        <!-- SweetAlert Success Message -->
+        @if(session('success'))
+        <div class="alert alert-success d-none" id="success-alert">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        <!-- SweetAlert Error Message -->
+        @if(session('error'))
+        <div class="alert alert-danger d-none" id="error-alert">
+            {{ session('error') }}
+        </div>
+        @endif
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Pelanggan</th>
+                    <th>Paket Wisata</th>
+                    <th>Tanggal Reservasi</th>
+                    <th>Jumlah Peserta</th>
+                    <th>Total Bayar</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($reservasis as $index => $reservasi)
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $reservasi->pelanggan->nama_lengkap ?? 'N/A' }}</td>
+                    <td>{{ $reservasi->paket->nama_paket ?? 'N/A' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($reservasi->tgl_reservasi)->format('d M Y') }}</td>
+                    <td>{{ $reservasi->jumlah_peserta }} orang</td>
+                    <td>Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</td>
+                    <td>
+                        @php
+                        $status = $reservasi->status_reservasi ?? 'default';
+                        $badgeClass = [
+                        'pesan' => 'warning',
+                        'dibayar' => 'success',
+                        'selesai' => 'primary'
+                        ][$status] ?? 'secondary';
+                        @endphp
+
+                        <span class="badge badge-{{ $badgeClass }}">
+                            {{ ucfirst($status) }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{{ route('reservasi.edit', $reservasi->id) }}" class="btn btn-warning btn-sm">
+                                <i class="fa fa-edit"></i> Edit
+                            </a>
+                            <form action="{{ route('reservasi.destroy', $reservasi->id) }}" method="POST" style="display: inline-block;" class="delete-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            </form>
                         </div>
-                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
 
-                        <!-- SweetAlert Error Message -->
-                        @if(session('error'))
-                        <div class="alert alert-danger d-none" id="error-alert">
-                            {{ session('error') }}
-                        </div>
-                        @endif
-
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">No</th>
-                                        <th scope="col">Pelanggan</th>
-                                        <th scope="col">Paket Wisata</th>
-                                        <th scope="col">Tanggal Reservasi</th>
-                                        <th scope="col">Jumlah Peserta</th>
-                                        <th scope="col">Total Bayar</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Aksi</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    @foreach ($reservasis as $index => $reservasi)
-                                    <tr>
-                                        <th scope="row">{{ $index + 1 }}</th>
-
-                                        <td>
-                                            {{ $reservasi->pelanggan->nama_lengkap ?? 'N/A' }}
-                                            <br>
-                                            <small class="text-muted">{{ $reservasi->pelanggan->no_hp ?? '' }}</small>
-                                        </td>
-
-                                        <td>{{ $reservasi->paket->nama_paket ?? 'N/A' }}</td>
-
-                                        <td>{{ \Carbon\Carbon::parse($reservasi->tgl_reservasi)->format('d M Y') }}</td>
-
-                                        <td>{{ $reservasi->jumlah_peserta }} orang</td>
-
-                                        <td>Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</td>
-
-                                        <td>
-                                            @php
-                                            $status = $reservasi->status_reservasi_wisata ?? 'default'; // Default to 'default' if it's not set
-                                            $badgeClass = [
-                                            'pesan' => 'warning',
-                                            'dibayar' => 'success',
-                                            'selesai' => 'primary'
-                                            ][$status] ?? 'secondary'; // Default to 'secondary' if the status is not in the array
-                                            @endphp
-
-                                            <span class="badge badge-{{ $badgeClass }}">
-                                                {{ ucfirst($reservasi->status_reservasi_wisata) }}
-                                            </span>
-                                        </td>
-
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('reservasi.edit', $reservasi->id) }}" class="btn btn-sm btn-warning">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
-                                                <a href="{{ route('reservasi.show', $reservasi->id) }}" class="btn btn-sm btn-info">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
-                                                <form action="{{ route('reservasi.destroy', $reservasi->id) }}" method="POST" style="display: inline-block;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus reservasi ini?')">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        @if($reservasis->isEmpty())
-                        <div class="alert alert-info text-center mt-3">
-                            Tidak ada data reservasi tersedia
-                        </div>
-                        @endif
-
-                    </div> <!-- card-body -->
-                </div> <!-- card -->
-            </div> <!-- col -->
-        </div> <!-- row -->
-    </div> <!-- content-wrapper -->
-</div> <!-- main-panel -->
-
+        @if($reservasis->isEmpty())
+        <div class="alert alert-info text-center mt-3">
+            Tidak ada data reservasi tersedia
+        </div>
+        @endif
+    </div>
+</div>
 
 <!-- SweetAlert JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

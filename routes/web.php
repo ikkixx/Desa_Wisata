@@ -62,8 +62,10 @@ Route::get('/owner', [App\Http\Controllers\OwnerController::class, 'index'])
     ->middleware(['auth', CheckUserLevel::class . ':owner'])
     ->name('owner');
 
-Route::get('/profilepelanggan', [App\Http\Controllers\PelangganController::class, 'profilePelanggan'])
-    ->middleware(['auth', CheckPelanggan::class]);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+});
 
 Route::middleware('auth')->group(function () {
     // Users Routes

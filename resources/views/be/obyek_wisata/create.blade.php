@@ -10,67 +10,157 @@
 
 <div class="clearfix"></div>
 
-<div class="content-wrapper">
-    <div class="container-fluid">
-
-        <div class="row mt-3">
-            <div class="col-lg-12">
+        <div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Tambah Obyek Wisata</h4>
-                        <form action="{{ route('obyek_wisata.store') }}" method="POST" enctype="multipart/form-data">
+                        <h4 class="card-title">Tambah Objek Wisata</h4>
+                        <p class="card-description">Form Tambah Data Objek Wisata</p>
+
+                        <form class="forms-sample" method="POST" action="{{ route('obyek_wisata.store') }}" enctype="multipart/form-data">
                             @csrf
+
                             <div class="form-group">
                                 <label for="nama_wisata">Nama Wisata</label>
-                                <input type="text" name="nama_wisata" id="nama_wisata" class="form-control" required>
+                                <input type="text" class="form-control @error('nama_wisata') is-invalid @enderror" id="nama_wisata" name="nama_wisata" value="{{ old('nama_wisata') }}" required>
+                                @error('nama_wisata')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="deskripsi_wisata">Deskripsi Wisata</label>
-                                <textarea name="deskripsi_wisata" id="deskripsi_wisata" class="form-control" rows="4" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="kategori_wisata">Kategori Wisata</label>
-                                <select name="kategori_wisata" id="kategori_wisata" class="form-control" required>
+                                <label for="id_kategori_wisata">Kategori Wisata</label>
+                                <select class="form-control @error('id_kategori_wisata') is-invalid @enderror" id="id_kategori_wisata" name="id_kategori_wisata" required>
                                     <option value="">Pilih Kategori</option>
-                                    {{-- Loop kategori wisata --}}
-                                    @foreach($kategori_wisata as $kategori)
-                                    <option value="{{ $kategori->id }}">{{ $kategori->kategori_wisata }}</option>
+                                    @foreach($kategoris as $kategori)
+                                        <option value="{{ $kategori->id }}" {{ old('id_kategori_wisata') == $kategori->id ? 'selected' : '' }}>
+                                            {{ $kategori->kategori_wisata }}
+                                        </option>
                                     @endforeach
                                 </select>
+                                @error('id_kategori_wisata')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
+
+                            <div class="form-group">
+                                <label for="deskripsi_wisata">Deskripsi</label>
+                                <textarea class="form-control @error('deskripsi_wisata') is-invalid @enderror" id="deskripsi_wisata" name="deskripsi_wisata" rows="3" required>{{ old('deskripsi_wisata') }}</textarea>
+                                @error('deskripsi_wisata')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
+                            </div>
+
                             <div class="form-group">
                                 <label for="fasilitas">Fasilitas</label>
-                                <textarea name="fasilitas" id="fasilitas" class="form-control" rows="3" required></textarea>
+                                <textarea class="form-control @error('fasilitas') is-invalid @enderror" id="fasilitas" name="fasilitas" rows="3" required>{{ old('fasilitas') }}</textarea>
+                                @error('fasilitas')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="foto1">Foto 1</label>
-                                <input type="file" name="foto1" id="foto1" class="form-control">
+                                <label>Foto 1</label>
+                                <input type="file" name="foto1" class="form-control @error('foto1') is-invalid @enderror">
+                                @error('foto1')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="foto2">Foto 2</label>
-                                <input type="file" name="foto2" id="foto2" class="form-control">
+                                <label>Foto 2</label>
+                                <input type="file" name="foto2" class="form-control @error('foto2') is-invalid @enderror">
+                                @error('foto2')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="foto3">Foto 3</label>
-                                <input type="file" name="foto3" id="foto3" class="form-control">
+                                <label>Foto 3</label>
+                                <input type="file" name="foto3" class="form-control @error('foto3') is-invalid @enderror">
+                                @error('foto3')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="foto4">Foto 4</label>
-                                <input type="file" name="foto4" id="foto4" class="form-control">
+                                <label>Foto 4</label>
+                                <input type="file" name="foto4" class="form-control @error('foto4') is-invalid @enderror">
+                                @error('foto4')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
+
                             <div class="form-group">
-                                <label for="foto5">Foto 5</label>
-                                <input type="file" name="foto5" id="foto5" class="form-control">
+                                <label>Foto 5</label>
+                                <input type="file" name="foto5" class="form-control @error('foto5') is-invalid @enderror">
+                                @error('foto5')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
-                            <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="{{ route('obyek_wisata.manage') }}" class="btn btn-secondary">Batal</a>
+
+                            <button type="submit" class="btn btn-primary me-2">Simpan</button>
+                            <button type="button" class="btn btn-light" onclick="window.history.back()">Batal</button>
                         </form>
                     </div>
                 </div>
             </div>
-        </div><!--End Row-->
-
+        </div>
     </div>
 </div>
+
+<!-- SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Success message
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: successAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        // Error message
+        const errorAlert = document.getElementById('error-alert');
+        if (errorAlert) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: errorAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        // Delete confirmation
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 
 @endsection

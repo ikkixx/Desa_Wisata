@@ -37,11 +37,11 @@
                 <i class="zmdi zmdi-map"></i> <span>Kategori Wisata</span>
             </a>
         </li>
-        <!-- <li>
+        <li>
             <a href="{{ route('penginapan.manage') }}">
                 <i class="zmdi zmdi-hotel"></i> <span>Penginapan</span>
             </a>
-        </li> -->
+        </li>
         <li>
             <a href="{{ Route('kategori_berita.manage') }}">
                 <i class="zmdi zmdi-map"></i> <span>Kategori Berita</span>

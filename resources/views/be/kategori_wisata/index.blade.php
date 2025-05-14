@@ -1,10 +1,11 @@
-@extends('be.master') <!-- Ensure this file exists in resources\views\be\master.blade.php -->
+@extends('be.master')
 @section('sidebar')
-@include('be.sidebar') <!-- Ensure this file exists in resources\views\be\sidebar.blade.php -->
+@include('be.sidebar')
 @endsection
 @section('header')
-@include('be.header') <!-- Ensure this file exists in resources\views\be\header.blade.php -->
+@include('be.header')
 @endsection
+
 @section('content')
 <div class="clearfix"></div>
 <div class="content-wrapper">
@@ -12,14 +13,12 @@
     <div class="container">
         <h1 class="mb-4">Manajemen Kategori Wisata</h1>
 
-        <!-- SweetAlert Success Message -->
         @if(session('success'))
         <div class="alert alert-success d-none" id="success-alert">
             {{ session('success') }}
         </div>
         @endif
-        
-        <!-- SweetAlert Error Message -->
+
         @if(session('error'))
         <div class="alert alert-danger d-none" id="error-alert">
             {{ session('error') }}
@@ -27,10 +26,11 @@
         @endif
 
         @if(auth()->user()->level !== 'owner')
-        <a href="{{ route('kategori_wisata.create') }}" class="btn btn-primary mb-3">Tambah Kategori Wisata</a> <!-- Add button -->
+        <a href="{{ route('kategori_wisata.create') }}" class="btn btn-primary mb-3">Tambah Kategori Wisata</a>
         @endif
-        <table class="table table-bordered">
-            <thead>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
                 <tr>
                     <th>ID</th>
                     <th>Nama Kategori</th>
@@ -40,44 +40,46 @@
                     <th>Diperbarui Pada</th>
                     <th>Aksi</th>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($kategoriWisata as $kategori)
-                <tr>
-                    <td>{{ $kategori->id }}</td>
-                    <td>{{ $kategori->kategori_wisata }}</td>
-                    <td>
-                        @if($kategori->foto)
-                        <img src="{{ asset('storage/' . $kategori->foto) }}" alt="Foto Kategori" width="100">
-                        @else
-                        Tidak ada foto
-                        @endif
-                    </td>
-                    <td>{{ $kategori->deskripsi }}</td>
-                    <td>{{ $kategori->created_at->format('d-m-Y H:i') }}</td>
-                    <td>{{ $kategori->updated_at->format('d-m-Y H:i') }}</td>
-                    <td>
-                        @if(auth()->check() && auth()->user()->level !== 'owner')
-                        <a href="{{ route('kategori_wisata.edit', $kategori->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('kategori_wisata.destroy', $kategori->id) }}" method="POST" style="display:inline;" class="delete-form">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                        </form>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-                @if(session('alert'))
-                <div class="alert alert-{{ session('alert')['type'] }} alert-dismissible fade show" role="alert">
-                    {{ session('alert')['message'] }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                @endif
-            </tbody>
-        </table>
+                <tbody>
+                    @foreach($kategori as $item)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->kategori_wisata }}</td>
+                        <td>
+                            @if($item->foto)
+                            <img src="{{ asset('storage/' . $item->foto) }}" alt="Foto Kategori" class="img-thumbnail" width="100">
+                            @else
+                            <span class="text-muted">Tidak ada foto</span>
+                            @endif
+                        </td>
+                        <td>{{ Str::limit($item->deskripsi, 100) }}</td>
+                        <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
+                        <td>{{ $item->updated_at->format('d-m-Y H:i') }}</td>
+                        <td>
+                            <a href="{{ route('berita.edit', $item->id) }}"
+                                class="btn btn-sm btn-warning">
+                                <i class="fa fa-pencil-square-o"></i> Edit
+                            </a>
+                            <form action="{{ route('berita.destroy', $item->id) }}"
+                                method="POST" class="d-inline" id="deleteForm-{{ $item->id }}">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger delete-btn"
+                                    data-id="{{ $item->id }}">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        @if($kategori->isEmpty())
+        <div class="alert alert-info text-center mt-3">
+            Tidak ada data kategori wisata tersedia
+        </div>
+        @endif
     </div>
 </div>
 

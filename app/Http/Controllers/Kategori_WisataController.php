@@ -2,92 +2,110 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\KategoriWisata;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class Kategori_WisataController extends Controller
 {
     public function index()
     {
-        $kategoriWisata = KategoriWisata::all();
-        return view('be.kategori_wisata.index', compact('kategoriWisata'));
+        $greeting = $this->getGreeting();
+        $kategori = KategoriWisata::orderBy('created_at', 'desc')->get();
+
+        return view('be.kategori_wisata.index', [
+            'greeting' => $greeting,
+            'kategori' => $kategori
+        ]);
     }
 
     public function create()
     {
-        return view('be.kategori_wisata.create');
+        $greeting = $this->getGreeting();
+        return view('be.kategori_wisata.create', [
+            'greeting' => $greeting,
+        ]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'kategori_wisata' => 'required|unique:kategori_wisatas,kategori_wisata|max:255',
-            'deskripsi' => 'required',
-            'foto' => 'nullable|image|max:2048',
+        $validatedData = $request->validate([
+            'kategori_wisata' => 'required|string|max:255|unique:kategori_wisatas',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'deskripsi' => 'required|string'
         ]);
 
-        try {
-            $fotoPath = null;
-
-            if ($request->hasFile('foto')) {
-                $fotoPath = $request->file('foto')->store('kategori_wisata', 'public');
-            }
-
-            KategoriWisata::create([
-                'kategori_wisata' => $request->kategori_wisata,
-                'deskripsi' => $request->deskripsi,
-                'foto' => $fotoPath,
-                'aktif' => true, // optional jika Anda pakai kolom ini
-            ]);
-
-            return redirect()->route('kategori_wisata.manage')
-                ->with('success', 'Kategori Wisata berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Gagal menambahkan Kategori Wisata: ' . $e->getMessage())
-                ->withInput();
+        // Handle file upload
+        if ($request->hasFile('foto')) {
+            $validatedData['foto'] = $request->file('foto')->store('kategori_wisata', 'public');
         }
+
+        KategoriWisata::create($validatedData);
+
+        return redirect()->route('kategori_wisata.manage')
+            ->with('success', 'Kategori wisata berhasil dibuat.');
     }
 
     public function edit($id)
     {
         $kategori = KategoriWisata::findOrFail($id);
-        return view('be.kategori_wisata.edit', compact('kategori'));
+        $greeting = $this->getGreeting();
+        return view('be.kategori_wisata.edit', [
+            'greeting' => $greeting,
+            'kategori' => $kategori,
+        ]);
     }
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'kategori_wisata' => 'required|unique:kategori_wisatas,kategori_wisata|max:255',
-            'deskripsi' => 'required',
-            'foto' => 'nullable|image|max:2048',
+        $kategori = KategoriWisata::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'kategori_wisata' => 'required|string|max:255|unique:kategori_wisatas,kategori_wisata,' . $id,
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'deskripsi' => 'required|string'
         ]);
 
-        try {
-            $kategori = KategoriWisata::findOrFail($id);
-            $kategori->update($validated);
-
-            return redirect()->route('kategori_wisata.manage')
-                ->with('success', 'Kategori wisata berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return back()->withInput()
-                ->with('error', 'Gagal memperbarui kategori: ' . $e->getMessage());
+        // Handle file upload
+        if ($request->hasFile('foto')) {
+            // Delete old photo if exists
+            if ($kategori->foto) {
+                Storage::disk('public')->delete($kategori->foto);
+            }
+            $validatedData['foto'] = $request->file('foto')->store('kategori_wisata', 'public');
         }
-    }
 
+        $kategori->update($validatedData);
+
+        return redirect()->route('kategori_wisata.manage')
+            ->with('success', 'Kategori wisata berhasil diperbarui.');
+    }
 
     public function destroy($id)
     {
-        try {
-            $kategori = KategoriWisata::findOrFail($id);
-            $kategori->delete();
+        $kategori = KategoriWisata::findOrFail($id);
 
-            return redirect()->route('kategori_wisata.manage')
-                ->with('success', 'Kategori Wisata berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Gagal menghapus kategori Wisata: '.$e->getMessage());
+        // Delete photo if exists
+        if ($kategori->foto) {
+            Storage::disk('public')->delete($kategori->foto);
+        }
+
+        $kategori->delete();
+
+        return redirect()->route('kategori_wisata.manage')
+            ->with('success', 'Kategori wisata berhasil dihapus.');
+    }
+
+    private function getGreeting()
+    {
+        $hour = now()->hour;
+
+        if ($hour < 12) {
+            return 'Good Morning';
+        } elseif ($hour < 18) {
+            return 'Good Afternoon';
+        } else {
+            return 'Good Evening';
         }
     }
 }

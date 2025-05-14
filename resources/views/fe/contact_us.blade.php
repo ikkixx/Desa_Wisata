@@ -1,5 +1,5 @@
 <section class="info_section" id="contact_us">
-    <div class="container">
+    <!-- <div class="container">
         <div class="heading_container">
             <h2>
                 Kontak Kami
@@ -8,7 +8,7 @@
                 jika membutuhkan saluran komunikasi resmi hubungi bisnis/instansi terkait
             </p>
         </div>
-    </div>
+    </div> -->
     <div class="info_container">
         <div class="container">
             <div class="social_container">

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ReservasiController extends Controller
 {
@@ -21,15 +22,12 @@ class ReservasiController extends Controller
 
     public function index()
     {
-        // Untuk admin melihat semua reservasi
         if (Auth::check() && in_array(Auth::user()->level, ['admin', 'bendahara', 'owner'])) {
             $reservasis = Reservasi::with(['pelanggan', 'paket'])->latest()->get();
         }
-        // Untuk pelanggan hanya melihat reservasi mereka sendiri
         elseif (Auth::check() && Auth::user()->level === 'pelanggan') {
             $reservasis = Auth::user()->pelanggan->reservasis()->with('paket')->latest()->get();
         }
-        // Untuk guest (jika diperlukan)
         else {
             $reservasis = collect();
         }
@@ -45,11 +43,9 @@ class ReservasiController extends Controller
 
     public function create()
     {
-        // Untuk pelanggan hanya bisa membuat reservasi untuk diri sendiri
         if (Auth::user()->level === 'pelanggan') {
             $pelanggans = Pelanggan::where('id_user', Auth::id())->get();
         }
-        // Untuk admin bisa memilih pelanggan
         else {
             $pelanggans = Pelanggan::all();
         }
@@ -75,29 +71,24 @@ class ReservasiController extends Controller
             'harga' => 'required|numeric',
             'nilai_diskon' => 'nullable|numeric|min:0',
             'total_bayar' => 'required|numeric|min:0',
+            'status_reservasi' => 'required|in:pesan,dibayar,selesai',
             'file_bukti_tf' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-
-        // Handle file upload
         if ($request->hasFile('file_bukti_tf')) {
             $validated['file_bukti_tf'] = $request->file('file_bukti_tf')->store('bukti_transfer', 'public');
         }
 
-        // Format tanggal
         $validated['tgl_reservasi'] = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tgl_reservasi']);
 
-        // Authorization check untuk pelanggan
         if (Auth::user()->level === 'pelanggan' && $validated['id_pelanggan'] != Auth::user()->pelanggan->id) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Konversi nilai string ke numeric
         $validated['harga'] = str_replace(['Rp', '.', ' '], '', $validated['harga']);
         $validated['nilai_diskon'] = str_replace(['Rp', '.', ' '], '', $validated['nilai_diskon'] ?? '0');
         $validated['total_bayar'] = str_replace(['Rp', '.', ' '], '', $validated['total_bayar']);
 
-        // Buat reservasi
         Reservasi::create($validated);
 
         return redirect()->route('reservasi.manage')->with('success', 'Reservasi berhasil dibuat');
@@ -105,7 +96,6 @@ class ReservasiController extends Controller
 
     public function show(Reservasi $reservasi)
     {
-        // Authorization check
         if (Auth::user()->level === 'pelanggan' && $reservasi->id_pelanggan != Auth::user()->pelanggan->id) {
             abort(403, 'Unauthorized action.');
         }
@@ -121,77 +111,72 @@ class ReservasiController extends Controller
 
     public function edit(Reservasi $reservasi)
     {
-        // Authorization check
         if (Auth::user()->level === 'pelanggan' && $reservasi->id_pelanggan != Auth::user()->pelanggan->id) {
             abort(403, 'Unauthorized action.');
         }
 
         $pelanggans = Pelanggan::all();
         $pakets = PaketWisata::all();
-        $greeting = $this->getGreeting();
 
         return view('be.reservasi.edit', [
             'title' => 'Edit Reservasi',
             'reservasi' => $reservasi,
             'pelanggans' => $pelanggans,
             'pakets' => $pakets,
-            'greeting' => $greeting
+            'greeting' => $this->getGreeting()
         ]);
     }
 
     public function update(Request $request, Reservasi $reservasi)
     {
-        // Authorization check
-        if (Auth::user()->level === 'pelanggan' && $reservasi->id_pelanggan != Auth::user()->pelanggan->id) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $validated = $request->validate([
             'id_pelanggan' => 'required|exists:pelanggans,id',
             'id_paket' => 'required|exists:paket_wisatas,id',
-            'tgl_reservasi' => 'required|date_format:Y-m-d\TH:i|after_or_equal:now',
+            'tgl_reservasi' => 'required|date_format:Y-m-d\TH:i',
             'jumlah_peserta' => 'required|integer|min:1',
-            'harga' => 'required|numeric',
+            'harga' => 'required|numeric|min:0',
+            'diskon' => 'nullable|numeric|min:0|max:100',
             'nilai_diskon' => 'nullable|numeric|min:0',
             'total_bayar' => 'required|numeric|min:0',
+            'status_reservasi' => 'required|in:pesan,dibayar,selesai',
             'file_bukti_tf' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-
-        // Dapatkan harga dari paket wisata
-        $paket = PaketWisata::findOrFail($validated['id_paket']);
-        $validated['harga'] = $paket->harga_per_pack;
-
-        $validated['total_bayar'] = $validated['harga'] * $validated['jumlah_peserta'];
-        if ($validated['nilai_diskon']) {
-            $validated['total_bayar'] -= $validated['nilai_diskon'];
+        if ($request->hasFile('file_bukti_tf')) {
+            if ($reservasi->file_bukti_tf) {
+                Storage::delete($reservasi->file_bukti_tf);
+            }
+            $validated['file_bukti_tf'] = $request->file('file_bukti_tf')->store('bukti_transfer');
         }
+
+        $validated['tgl_reservasi'] = Carbon::createFromFormat('Y-m-d\TH:i', $validated['tgl_reservasi']);
 
         $reservasi->update($validated);
 
-        return redirect()->route('reservasi.manage')->with('success', 'Reservasi updated successfully.');
+        return redirect()->route('reservasi.manage')->with('success', 'Reservasi berhasil diperbarui');
     }
 
     public function destroy(Reservasi $reservasi)
     {
-        // Authorization check
         if (Auth::user()->level === 'pelanggan' && $reservasi->id_pelanggan != Auth::user()->pelanggan->id) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
-            // Delete the reservation
+            if ($reservasi->file_bukti_tf) {
+                Storage::delete($reservasi->file_bukti_tf);
+            }
+            
             $reservasi->delete();
 
-            return redirect()->route('reservasimanage')
+            return redirect()->route('reservasi.manage')
                 ->with('success', 'Reservasi berhasil dihapus!');
         } catch (\Exception $e) {
-            return redirect()->route('reservasimanage')
+            return redirect()->route('reservasi.manage')
                 ->with('error', 'Gagal menghapus reservasi: ' . $e->getMessage());
         }
     }
 
-    // API untuk mendapatkan data reservasi pending (digunakan di navbar)
     public function getPendingReservations()
     {
         if (!Auth::check() || Auth::user()->level !== 'pelanggan') {

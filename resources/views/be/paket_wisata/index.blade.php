@@ -12,25 +12,23 @@
     <div class="container-fluid"></div>
     <div class="container">
         <h1 class="mb-4">Daftar Paket Wisata</h1>
-        
+
         @if(auth()->check() && auth()->user()->level !== 'owner')
         <a href="{{ route('paket_wisata.create') }}" class="btn btn-primary mb-3">Tambah Paket Wisata</a>
         @endif
-        
-        <!-- SweetAlert Success Message -->
+
         @if(session('success'))
         <div class="alert alert-success d-none" id="success-alert">
             {{ session('success') }}
         </div>
         @endif
-        
-        <!-- SweetAlert Error Message -->
+
         @if(session('error'))
         <div class="alert alert-danger d-none" id="error-alert">
             {{ session('error') }}
         </div>
         @endif
-        
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -48,14 +46,62 @@
                 <tr>
                     <td>{{ $paket->id }}</td>
                     <td>{{ $paket->nama_paket }}</td>
-                    <td>{{ $paket->deskripsi }}</td>
-                    <td>{{ $paket->fasilitas }}</td>
-                    <td>{{ number_format($paket->harga_per_pack, 0, ',', '.') }}</td>
+                    <td>{{ Str::limit($paket->deskripsi, 50) }}</td>
+                    <td>{{ Str::limit($paket->fasilitas, 50) }}</td>
+                    <td>Rp {{ number_format($paket->harga_per_pack, 0, ',', '.') }}</td>
                     <td>
-                        @if($paket->foto)
-                        <img src="{{ asset('storage/' . $paket->foto) }}" alt="Foto Kategori" width="100">
+                        @if($paket->foto1)
+                        <img src="{{ asset('storage/' . $paket->foto1) }}"
+                            alt="Paket Image"
+                            class="img-thumbnail" width="100
+                            style=" object-fit: cover; cursor: pointer;"
+                            onclick="showImgPreview('{{ asset('storage/' . $paket->foto1) }}')">
                         @else
-                        Tidak ada foto
+                        <span class="text-muted">No Image</span>
+                        @endif
+                        @if($paket->foto2)
+                        <img src="{{ asset('storage/' . $paket->foto2) }}"
+                            alt="Paket Image"
+                            class="rounded"
+                            width="60"
+                            height="40"
+                            style="object-fit: cover; cursor: pointer;"
+                            onclick="showImgPreview('{{ asset('storage/' . $paket->foto2) }}')">
+                        @else
+
+                        @endif
+                        @if($paket->foto3)
+                        <img src="{{ asset('storage/' . $paket->foto3) }}"
+                            alt="Paket Image"
+                            class="rounded"
+                            width="60"
+                            height="40"
+                            style="object-fit: cover; cursor: pointer;"
+                            onclick="showImgPreview('{{ asset('storage/' . $paket->foto3) }}')">
+                        @else
+
+                        @endif
+                        @if($paket->foto4)
+                        <img src="{{ asset('storage/' . $paket->foto4) }}"
+                            alt="Paket Image"
+                            class="rounded"
+                            width="60"
+                            height="40"
+                            style="object-fit: cover; cursor: pointer;"
+                            onclick="showImgPreview('{{ asset('storage/' . $paket->foto4) }}')">
+                        @else
+
+                        @endif
+                        @if($paket->foto5)
+                        <img src="{{ asset('storage/' . $paket->foto5) }}"
+                            alt="Paket Image"
+                            class="rounded"
+                            width="60"
+                            height="40"
+                            style="object-fit: cover; cursor: pointer;"
+                            onclick="showImgPreview('{{ asset('storage/' . $paket->foto5) }}')">
+                        @else
+
                         @endif
                     </td>
                     <td>

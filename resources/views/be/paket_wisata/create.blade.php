@@ -83,27 +83,45 @@
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="foto1" class="col-sm-2 col-form-label">Foto Utama <span class="text-danger">*</span></label>
-                        <div class="col-sm-10">
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input @error('foto1') is-invalid @enderror"
-                                    id="foto1" name="foto1" accept="image/*" required>
-                                <label class="custom-file-label" for="foto1">Pilih file gambar</label>
+                    <div class="form-group">
+                                <label for="foto1">Main Image (Required)</label>
+                                <input type="file" class="form-control" id="foto1" name="foto1" required>
                                 @error('foto1')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
+                                    <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <small class="form-text text-muted">
-                                Format: JPEG, PNG, JPG (Maksimal 2MB)
-                            </small>
-                            <div class="mt-2" id="imagePreviewContainer" style="display: none;">
-                                <img id="imagePreview" src="#" alt="Preview Gambar" class="img-thumbnail" style="max-height: 200px;">
+                            
+                            <div class="form-group">
+                                <label for="foto2">Additional Image 1 (Optional)</label>
+                                <input type="file" class="form-control" id="foto2" name="foto2">
+                                @error('foto2')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
-                        </div>
-                    </div>
+                            
+                            <div class="form-group">
+                                <label for="foto3">Additional Image 2 (Optional)</label>
+                                <input type="file" class="form-control" id="foto3" name="foto3">
+                                @error('foto3')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="foto4">Additional Image 3 (Optional)</label>
+                                <input type="file" class="form-control" id="foto4" name="foto4">
+                                @error('foto4')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="foto5">Additional Image 4 (Optional)</label>
+                                <input type="file" class="form-control" id="foto5" name="foto5">
+                                @error('foto5')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
 
                     <div class="form-group row">
                         <div class="col-sm-10 offset-sm-2">
@@ -121,6 +139,46 @@
     </div>
 </div>
 
+<script>
+    // Preview gambar sebelum upload
+    document.getElementById('foto1').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const fileLabel = this.nextElementSibling;
+
+        if (file) {
+            // Update label nama file
+            fileLabel.textContent = file.name;
+
+            // Validasi tipe file
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                alert('Hanya file JPEG, PNG, atau JPG yang diizinkan');
+                this.value = '';
+                return;
+            }
+
+            // Validasi ukuran file (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file maksimal 2MB');
+                this.value = '';
+                return;
+            }
+
+            // Tampilkan preview gambar
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = 'none';
+            fileLabel.textContent = 'Pilih file gambar';
+        }
+    });
+</script>
 <!-- SweetAlert JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

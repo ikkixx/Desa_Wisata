@@ -7,101 +7,113 @@
 @endsection
 
 @section('content')
+<div class="clearfix"></div>
 <div class="content-wrapper">
-    <div class="container-fluid">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h2  class="mb-4">Daftar Kategori Berita</h2>
-            </div>
+    <div class="container-fluid"></div>
+    <div class="container">
+        <!-- Header Section -->
+        <h1 class="mb-3">Manajemen Kategori Berita</h1>
 
-            <!-- SweetAlert Messages -->
-            @if(session('success'))
-            <div class="alert alert-success d-none" id="success-alert">
-                {{ session('success') }}
-            </div>
-            @endif
-
-            @if(session('error'))
-            <div class="alert alert-danger d-none" id="error-alert">
-                {{ session('error') }}
-            </div>
-            @endif
-
-            <div class="card-body">
-                <!-- Tombol Tambah dipindahkan ke sini (atas tabel) -->
-                <div class="mb-3">
-                    <a href="{{ route('kategori_berita.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus"></i> Tambah Kategori
-                    </a>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Kategori</th>
-                                <th>Tanggal Dibuat</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($kategoris as $kategori)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $kategori->kategori_berita }}</td>
-                                <td>{{ $kategori->created_at->format('d/m/Y H:i') }}</td>
-                                <td>
-                                    <a href="{{ route('kategori_berita.edit', $kategori->id) }}"
-                                        class="btn btn-sm btn-warning">
-                                        <i class="fa fa-pencil-square-o"></i> Edit
-                                    </a>
-                                    <form action="{{ route('kategori_berita.destroy', $kategori->id) }}"
-                                        method="POST" class="d-inline" id="deleteForm-{{ $kategori->id }}">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger delete-btn"
-                                            data-id="{{ $kategori->id }}">
-                                            <i class="fa fa-trash"></i> Hapus
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <!-- Tombol Tambah di kiri bawah judul -->
+        <div class="mb-4">
+            <a href="{{ route('kategori_berita.create') }}" class="btn btn-primary">
+                Tambah Kategori
+            </a>
         </div>
+
+        <!-- Alert Messages -->
+        @if(session('success'))
+        <div class="alert alert-success d-none" id="success-alert">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger d-none" id="error-alert">
+            {{ session('error') }}
+        </div>
+        @endif
+
+        <!-- Main Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th>No</th>
+                    <th>Nama Kategori</th>
+                    <th>Tanggal Dibuat</th>
+                    <th>Tanggal Diupdate</th>
+                    <th>Aksi</th>
+                </tr>
+                <tbody>
+                    @foreach($kategoris as $kategori)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $kategori->kategori_berita }}</td>
+                        <td>{{ $kategori->created_at->format('d-m-Y H:i') }}</td>
+                        <td>{{ $kategori->updated_at->format('d-m-Y H:i') }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ route('kategori_berita.edit', $kategori->id) }}"
+                                    class="btn btn-warning btn-sm">
+                                    <i class="fa fa-pencil-square-o"></i> Edit
+                                </a>
+                                <form action="{{ route('obyek_wisata.destroy', $kategori->id) }}"
+                                    method="POST" class="d-inline" id="deleteForm-{{ $kategori->id }}">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger delete-btn"
+                                        data-id="{{ $kategori->id }}">
+                                        <i class="fa fa-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        @if($kategoris->isEmpty())
+        <div class="alert alert-info text-center mt-3">
+            Tidak ada data Kategori Berita tersedia
+        </div>
+        @endif
     </div>
 </div>
 
+<!-- SweetAlert JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // SweetAlert notifications
-        const showAlert = (type, title, text) => {
+        // Success message
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
             Swal.fire({
-                icon: type,
-                title: title,
-                text: text,
+                icon: 'success',
+                title: 'Sukses!',
+                text: successAlert.textContent,
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK'
             });
-        };
-
-        // Success message
-        const successAlert = document.getElementById('success-alert');
-        if (successAlert) showAlert('success', 'Sukses!', successAlert.textContent);
+        }
 
         // Error message
         const errorAlert = document.getElementById('error-alert');
-        if (errorAlert) showAlert('error', 'Gagal!', errorAlert.textContent);
+        if (errorAlert) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: errorAlert.textContent,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
 
         // Delete confirmation
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                const formId = this.getAttribute('data-id');
+                const form = this.closest('form');
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
@@ -114,7 +126,7 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        document.getElementById(`deleteForm-${formId}`).submit();
+                        form.submit();
                     }
                 });
             });

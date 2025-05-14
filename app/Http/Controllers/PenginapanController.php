@@ -13,7 +13,7 @@ class PenginapanController extends Controller
     {
         $penginapans = Penginapan::query()->paginate(10);
         $greeting = $this->getGreeting();
-        
+
         return view('be.penginapan.index', [
             'title' => 'Penginapan Management',
             'penginapans' => $penginapans,
@@ -24,7 +24,7 @@ class PenginapanController extends Controller
     public function create()
     {
         $greeting = $this->getGreeting();
-        
+
         return view('be.penginapan.create', [
             'title' => 'Create Penginapan',
             'greeting' => $greeting
@@ -53,7 +53,7 @@ class PenginapanController extends Controller
 
         // Handle file uploads
         for ($i = 1; $i <= 5; $i++) {
-            $field = 'foto'.$i;
+            $field = 'foto' . $i;
             if ($request->hasFile($field)) {
                 $path = $request->file($field)->store('penginapan_images', 'public');
                 $data[$field] = $path;
@@ -68,7 +68,7 @@ class PenginapanController extends Controller
     public function show(Penginapan $penginapan)
     {
         $greeting = $this->getGreeting();
-        
+
         return view('be.penginapan.show', [
             'title' => 'Detail Penginapan',
             'penginapan' => $penginapan,
@@ -80,7 +80,7 @@ class PenginapanController extends Controller
     {
         $greeting = $this->getGreeting();
         $penginapan = Penginapan::findOrFail($id);
-        
+
         return view('be.penginapan.edit', [
             'title' => 'Edit Penginapan',
             'penginapan' => $penginapan,
@@ -109,8 +109,8 @@ class PenginapanController extends Controller
 
         // Handle photo updates
         for ($i = 1; $i <= 5; $i++) {
-            $field = 'foto'.$i;
-            $deleteField = 'hapus_foto'.$i;
+            $field = 'foto' . $i;
+            $deleteField = 'hapus_foto' . $i;
 
             // If delete checkbox is checked
             if ($request->has($deleteField) && $request->input($deleteField)) {
@@ -150,7 +150,7 @@ class PenginapanController extends Controller
     private function getGreeting()
     {
         $hour = Carbon::now()->hour;
-        
+
         if ($hour < 12) {
             return 'Good Morning';
         } elseif ($hour < 18) {

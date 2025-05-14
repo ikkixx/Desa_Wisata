@@ -30,38 +30,57 @@ class Paket_WisataController extends Controller  // Menggunakan PascalCase untuk
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nama_paket' => 'required|string|max:255|unique:paket_wisatas,nama_paket',  // Menambahkan unique
-            'deskripsi' => 'required|string',
-            'fasilitas' => 'required|string',
-            'harga_per_pack' => 'required|numeric|min:0',  // Menambahkan min:0
-            'foto1' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',  // Menambahkan webp
-        ]);
+{
+    $validated = $request->validate([
+        'nama_paket' => 'required',
+        'deskripsi' => 'required',
+        'fasilitas' => 'required',
+        'harga_per_pack' => 'required|numeric',
+        'foto1' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'foto2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'foto3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'foto4' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'foto5' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
 
-        try {
-            if ($request->hasFile('foto1')) {
-                $file = $request->file('foto1');
-                Log::info('File info:', [
-                    'OriginalName' => $file->getClientOriginalName(),
-                    'Extension' => $file->getClientOriginalExtension(),
-                    'Size' => $file->getSize(),
-                    'MimeType' => $file->getMimeType()
-                ]);
-            }
+    $paketWisata = new PaketWisata();
+    $paketWisata->fill($validated);
 
-
-            PaketWisata::create($validated);
-
-            return redirect()->route('paket_wisata.manage')
-                ->with('success', 'Paket wisata berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            Log::error('Error creating paket wisata: ' . $e->getMessage());  // Menambahkan logging
-            return redirect()->back()
-                ->with('error', 'Gagal menambahkan paket wisata: ' . $e->getMessage())
-                ->withInput();
-        }
+    // Handle upload foto1 (required)
+    if ($request->hasFile('foto1')) {
+        $path = $request->file('foto1')->store('paket_wisata', 'public');
+        $paketWisata->foto1 = $path;
     }
+
+    // Handle upload foto2 (optional)
+    if ($request->hasFile('foto2')) {
+        $path = $request->file('foto2')->store('paket_wisata', 'public');
+        $paketWisata->foto2 = $path;
+    }
+
+    // Handle upload foto3 (optional)
+    if ($request->hasFile('foto3')) {
+        $path = $request->file('foto3')->store('paket_wisata', 'public');
+        $paketWisata->foto3 = $path;
+    }
+
+    // Handle upload foto4 (optional)
+    if ($request->hasFile('foto4')) {
+        $path = $request->file('foto4')->store('paket_wisata', 'public');
+        $paketWisata->foto4 = $path;
+    }
+
+    // Handle upload foto5 (optional)
+    if ($request->hasFile('foto5')) {
+        $path = $request->file('foto5')->store('paket_wisata', 'public');
+        $paketWisata->foto5 = $path;
+    }
+
+    $paketWisata->save();
+
+    return redirect()->route('paket_wisata.manage')
+        ->with('success', 'Paket wisata berhasil ditambahkan');
+}
 
     /**
      * Display the specified resource.
