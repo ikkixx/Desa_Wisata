@@ -9,9 +9,8 @@ class Reservasi extends Model
 {
     use HasFactory;
 
-    // Update the table name to match the actual database table
     protected $table = 'reservasis';
-
+    
     protected $fillable = [
         'id_pelanggan',
         'id_paket',
@@ -25,13 +24,17 @@ class Reservasi extends Model
         'status_reservasi'
     ];
 
-    public function pelanggan()
-    {
-        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
-    }
+    protected $casts = [
+        'tgl_reservasi' => 'datetime',
+    ];
 
     public function paket()
     {
         return $this->belongsTo(PaketWisata::class, 'id_paket');
+    }
+
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 }

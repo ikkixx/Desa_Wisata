@@ -56,11 +56,11 @@
                         <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
                         <td>{{ $item->updated_at->format('d-m-Y H:i') }}</td>
                         <td>
-                            <a href="{{ route('berita.edit', $item->id) }}"
+                            <a href="{{ route('kategori_wisata.edit', $item->id) }}"
                                 class="btn btn-sm btn-warning">
                                 <i class="fa fa-pencil-square-o"></i> Edit
                             </a>
-                            <form action="{{ route('berita.destroy', $item->id) }}"
+                            <form action="{{ route('kategori_wisata.destroy', $item->id) }}"
                                 method="POST" class="d-inline" id="deleteForm-{{ $item->id }}">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger delete-btn"
@@ -86,6 +86,13 @@
 <!-- SweetAlert JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Function to show image preview
+    function showImageModal(src) {
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        document.getElementById('modalImage').src = src;
+        modal.show();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Success message
         const successAlert = document.getElementById('success-alert');
@@ -112,10 +119,11 @@
         }
 
         // Delete confirmation
-        const deleteForms = document.querySelectorAll('.delete-form');
-        deleteForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
                 e.preventDefault();
+                const form = this.closest('form');
+
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
                     text: "Data akan dihapus permanen!",

@@ -87,11 +87,11 @@
                         <td>{{ Str::limit(strip_tags($item->berita), 50) }}</td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{{ route('kategori_berita.edit', $item->id) }}"
+                                <a href="{{ route('berita.edit', $item->id) }}"
                                     class="btn btn-warning btn-sm">
                                     <i class="fa fa-pencil-square-o"></i> Edit
                                 </a>
-                                <form action="{{ route('obyek_wisata.destroy', $item->id) }}"
+                                <form action="{{ route('berita.destroy', $item->id) }}"
                                     method="POST" class="d-inline" id="deleteForm-{{ $item->id }}">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger delete-btn"

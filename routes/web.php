@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\Paket_WisataController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -14,13 +15,37 @@ use App\Http\Middleware\CheckPelanggan;
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::resource('obyek-wisata', App\Http\Controllers\Obyek_WisataController::class);
-Route::resource('paket-wisata', App\Http\Controllers\Paket_WisataController::class);
-Route::resource('kategori-wisata', App\Http\Controllers\Kategori_WisataController::class);
-Route::resource('berita', App\Http\Controllers\BeritaController::class);
-Route::resource('penginapan', App\Http\Controllers\PenginapanController::class);
-Route::resource('reservasi', App\Http\Controllers\ReservasiController::class);
+// Route untuk index (semua data)
+Route::get('/paket-wisata', [App\Http\Controllers\Paket_wisataController::class, 'feindex'])->name('paket_wisata.index');
+Route::get('/wisata', [App\Http\Controllers\Obyek_wisataController::class, 'feindex'])->name('obyek_wisata.index');
+Route::get('/stay-cation', [App\Http\Controllers\PenginapanController::class, 'feindex'])->name('nginap_wisata.index');
+Route::get('/berita-wisata', [App\Http\Controllers\BeritaController::class, 'feindex'])->name('berita_wisata.index');
 
+// Route untuk detail
+Route::get('/paket-wisata/{id}', [App\Http\Controllers\Paket_wisataController::class, 'feshow'])->name('paket_wisata.detail');
+Route::get('/wisata/{id}', [App\Http\Controllers\Obyek_wisataController::class, 'feshow'])->name('obyek_wisata.detail');
+Route::get('/stay-cation/{id}', [App\Http\Controllers\PenginapanController::class, 'feshow'])->name('nginap_wisata.detail');
+Route::get('/berita-wisata/{id}', [App\Http\Controllers\BeritaController::class, 'feshow'])->name('berita_wisata.detail');
+
+// Route::resource('reservasi', App\Http\Controllers\ReservasiController::class)->names([
+//     'create' => 'reservasi.create',
+//     'store' => 'reservasi.store',
+//     // ...
+// ]);
+
+Route::prefix('reservasi')->group(function () {
+    Route::get('/', [App\Http\Controllers\ReservasiController::class, 'index'])->name('reservasi.index');
+    Route::get('/create', [App\Http\Controllers\ReservasiController::class, 'create'])->name('reservasi.create');
+    Route::post('/', [App\Http\Controllers\ReservasiController::class, 'store'])->name('reservasi.store');
+    Route::get('/{reservasi}/show', [App\Http\Controllers\ReservasiController::class, 'show'])->name('reservasi.show');
+    Route::get('/{reservasi}/edit', [App\Http\Controllers\ReservasiController::class, 'edit'])->name('reservasi.edit');
+    Route::put('/{reservasi}', [App\Http\Controllers\ReservasiController::class, 'update'])->name('reservasi.update');
+    Route::delete('/{reservasi}', [App\Http\Controllers\ReservasiController::class, 'destroy'])->name('reservasi.destroy');
+    Route::get('/api/pending', [App\Http\Controllers\ReservasiController::class, 'getPendingReservations'])->name('reservasi_pending');
+    Route::put('/reservasi/{reservasi}/confirm', [App\Http\Controllers\OwnerController::class, 'confirm'])->name('reservasi.confirm');
+    Route::put('/reservasi/{reservasi}/reject', [App\Http\Controllers\OwnerController::class, 'reject'])->name('reservasi.reject');
+    Route::get('/reservasi/{reservasi}/detail', [App\Http\Controllers\OwnerController::class, 'showReservasi'])->name('be-reservasi.detail');
+});
 
 // Registrasi (Hanya untuk Pelanggan)
 Route::middleware('guest')->group(function () {
@@ -66,7 +91,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
-
 Route::middleware('auth')->group(function () {
     // Users Routes
     Route::resource('user-manage', App\Http\Controllers\UsersController::class)->middleware(['auth', CheckUserLevel::class . ':admin'])->names([
@@ -164,7 +188,27 @@ Route::resource('karyawan', App\Http\Controllers\KaryawanController::class)->nam
 ]);
 
 Route::put('user-manage/{user}', [App\Http\Controllers\UsersController::class, 'update'])->name('user.update');
-    
+
 // Route::prefix('admin')->middleware(['auth', CheckUserLevel::class . ':admin'])->group(function () {
-    
+
 // });
+
+Route::prefix('owner')->group(function () {
+    // Export PDF
+    Route::get('/export-pdf', [OwnerController::class, 'exportPdf'])->name('owner.exportPdf');
+    Route::get('/statistik/export-pdf', [OwnerController::class, 'exportStatistikPdf'])->name('owner.statistik.exportPdf');
+    Route::get('/export-excel', [OwnerController::class, 'exportExcel'])->name('owner.exportExcel');
+});
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Reservasi Routes
+    Route::get('/paket-wisata/{paket}/reservasi', [App\Http\Controllers\ReservasiController::class, 'create'])
+        ->name('reservasi.create');
+    Route::post('/reservasi', [App\Http\Controllers\ReservasiController::class, 'store'])
+        ->name('reservasi.store');
+    Route::get('/reservasi', [App\Http\Controllers\ReservasiController::class, 'index'])
+        ->name('reservasi.index');
+    Route::delete('/reservasi/{reservasi}', [App\Http\Controllers\ReservasiController::class, 'destroy'])
+        ->name('reservasi.destroy');
+});

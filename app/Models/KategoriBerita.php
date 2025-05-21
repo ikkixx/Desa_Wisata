@@ -2,25 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KategoriBerita extends Model
 {
     use HasFactory;
 
     protected $table = 'kategori_beritas';
-    protected $fillable = ['kategori_berita'];
+    
+    protected $fillable = [
+        'nama_kategori', // Changed from 'kategori_berita' for better naming
+        'slug' // Optional but recommended
+    ];
 
-    // Relasi ke ObyekWisata (jika ada)
-    public function obyekWisata()
+    /**
+     * Get all beritas for this kategori
+     */
+    public function beritas(): HasMany
     {
-        return $this->hasMany(ObyekWisata::class, 'id_kategori_berita');
+        return $this->hasMany(Berita::class, 'id_kategori_berita');
     }
-
-    // Tambahkan relasi ke Berita (jika diperlukan)
-    public function beritas()
-    {
-        return $this->hasMany(Berita::class, 'id_kategori');
-    }
-}   
+}

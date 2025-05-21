@@ -106,16 +106,18 @@
     </div>
 </div>
 
-<!-- SweetAlert -->
+<!-- SweetAlert JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function showImgPreview(src) {
-        document.getElementById('imgPreview').src = src;
-        var myModal = new bootstrap.Modal(document.getElementById('imgPreviewModal'));
-        myModal.show();
+    // Function to show image preview
+    function showImageModal(src) {
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        document.getElementById('modalImage').src = src;
+        modal.show();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Success message
         const successAlert = document.getElementById('success-alert');
         if (successAlert) {
             Swal.fire({
@@ -127,6 +129,7 @@
             });
         }
 
+        // Error message
         const errorAlert = document.getElementById('error-alert');
         if (errorAlert) {
             Swal.fire({
@@ -138,10 +141,12 @@
             });
         }
 
-        const deleteForms = document.querySelectorAll('.delete-form');
-        deleteForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
+        // Delete confirmation
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
                 e.preventDefault();
+                const form = this.closest('form');
+
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
                     text: "Data akan dihapus permanen!",

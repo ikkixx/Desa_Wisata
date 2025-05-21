@@ -104,8 +104,9 @@
                             @endif
                         </td>
                         <td>
+                            <div class="btn-group" role="group">
                                 <a href="{{ route('user.edit', $data->id) }}"
-                                    class="btn btn-sm btn-warning">
+                                    class="btn btn-warning btn-sm">
                                     <i class="fa fa-pencil-square-o"></i> Edit
                                 </a>
                                 <form action="{{ route('user.destroy', $data->id) }}"
@@ -116,7 +117,8 @@
                                         <i class="fa fa-trash"></i> Hapus
                                     </button>
                                 </form>
-                            </td>
+                            </div>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -153,28 +155,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Function to show image preview
-    function showImgPreview(src) {
-        const modal = new bootstrap.Modal(document.getElementById('imgPreviewModal'));
-        document.getElementById('imgPreview').src = src;
+    function showImageModal(src) {
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        document.getElementById('modalImage').src = src;
         modal.show();
-    }
-
-    // Function for delete confirmation
-    function deleteConfirm(id) {
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "Data akan dihapus permanen!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('deleteForm' + id).submit();
-            }
-        });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -201,6 +185,29 @@
                 confirmButtonText: 'OK'
             });
         }
+
+        // Delete confirmation
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
     });
 </script>
 @endsection

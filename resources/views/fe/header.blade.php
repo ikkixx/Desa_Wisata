@@ -32,13 +32,13 @@
                         <a class="nav-link" href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#bookTrip">Pesan Trip</a>
+                        <a class="nav-link" href="#penginapan">Penginapan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#package">Paket</a>
+                        <a class="nav-link" href="#obyek-wisata">Obyek Wisata</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#service">Servis</a>
+                        <a class="nav-link" href="#paket-wisata">Paket Wisata</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact_us">Kontak Kami</a>

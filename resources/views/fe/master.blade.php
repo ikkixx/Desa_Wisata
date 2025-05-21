@@ -56,23 +56,25 @@
         <!-- slider section -->
         @yield('slider')
         <!-- end slider section -->
-        @yield('content')
+        
     </div>
 
 
     <!-- trip section -->
-    @yield('trip')
+    @yield('penginapan')
     <!-- end trip section -->
 
 
     <!-- package section -->
-    @yield('package')
+    @yield('obyek')
     <!-- end package section -->
 
 
     <!-- service section -->
-    @yield('service')
+    @yield('paket')
     <!-- end service section -->
+    
+    @yield('berita')
 
     <!-- blog section -->
     @yield('blog')

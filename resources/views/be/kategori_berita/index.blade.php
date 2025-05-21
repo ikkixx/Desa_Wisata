@@ -57,7 +57,7 @@
                                     class="btn btn-warning btn-sm">
                                     <i class="fa fa-pencil-square-o"></i> Edit
                                 </a>
-                                <form action="{{ route('obyek_wisata.destroy', $kategori->id) }}"
+                                <form action="{{ route('kategori_berita.destroy', $kategori->id) }}"
                                     method="POST" class="d-inline" id="deleteForm-{{ $kategori->id }}">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger delete-btn"

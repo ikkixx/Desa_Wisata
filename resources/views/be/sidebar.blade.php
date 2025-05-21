@@ -46,6 +46,17 @@
             <a href="{{ Route('kategori_berita.manage') }}">
                 <i class="zmdi zmdi-map"></i> <span>Kategori Berita</span>
             </a>
+        </li>
+        <li>
+            <a href="{{ Route('paket_wisata.manage') }}">
+                <i class="zmdi zmdi-case"></i> <span>Paket Wisata</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ Route('reservasi.manage') }}">
+                <i class="zmdi zmdi-calendar-note"></i> <span>Reservasi</span>
+            </a>
+        </li>
             @elseif (Auth::check() && str_contains(Auth::user()->level, 'bendahara'))
         <li>
             <a href="{{ Route('paket_wisata.manage') }}">

@@ -44,7 +44,7 @@
             <tbody>
                 @foreach($paketWisata as $paket)
                 <tr>
-                    <td>{{ $paket->id }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $paket->nama_paket }}</td>
                     <td>{{ Str::limit($paket->deskripsi, 50) }}</td>
                     <td>{{ Str::limit($paket->fasilitas, 50) }}</td>
